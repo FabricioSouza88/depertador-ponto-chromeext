@@ -1,0 +1,86 @@
+========================================
+  DESPERTADOR PONTO - GUIA DE INSTALACAO
+========================================
+
+INSTALACAO RAPIDA:
+==================
+
+1. Abra o Google Chrome
+
+2. Digite na barra de endereco: chrome://extensions/
+
+3. Ative "Modo do desenvolvedor" (canto superior direito)
+
+4. Clique em "Carregar sem compactacao"
+
+5. Selecione esta pasta: depertador-ponto
+
+6. Pronto! A extensao estara instalada
+
+
+COMO USAR:
+==========
+
+1. Acesse: https://app.ahgora.com.br/novabatidaonline/
+
+2. Bata o ponto normalmente
+
+3. A extensao detectara automaticamente!
+
+4. Clique no icone da extensao para ver:
+   - Horarios registrados
+   - Hora prevista de saida
+   - Tempo restante
+
+
+CONFIGURACAO:
+=============
+
+1. Clique no icone da extensao
+
+2. Va ate "Configuracoes":
+   - Defina suas horas de trabalho (padrao: 8 horas)
+   - Defina seu intervalo (padrao: 60 minutos)
+
+3. Clique em "Salvar"
+
+
+NOTIFICACOES:
+=============
+
+Voce recebera avisos:
+- 15 minutos antes da saida
+- 5 minutos antes da saida  
+- Na hora exata de sair
+
+
+SOLUCAO DE PROBLEMAS:
+=====================
+
+> Nao detecta o clique no botao?
+  - Verifique se esta na URL correta do Ahgora
+  - Recarregue a pagina
+
+> Nao aparece notificacao?
+  - Verifique se as notificacoes estao ativadas no Chrome
+  - Configuracoes > Privacidade > Notificacoes
+
+> Erro ao carregar a extensao?
+  - Verifique se todos os arquivos estao na pasta
+  - Especialmente os icones PNG (icon16.png, icon32.png, etc)
+
+
+SUPORTE:
+========
+
+Para mais informacoes, consulte:
+- README.md (documentacao completa)
+- QUICK_START.md (guia rapido)
+- CHANGELOG.md (historico de versoes)
+
+
+========================================
+Versao: 1.0.0
+Desenvolvido com carinho para facilitar
+o controle de ponto online!
+========================================

@@ -1,0 +1,20 @@
+{
+  "name": "despertador-ponto",
+  "version": "1.0.0",
+  "description": "Extensão Chrome para controlar e lembrar horários de batida de ponto online",
+  "scripts": {
+    "generate-icons": "node icons/generate-icons.js",
+    "build": "npm run generate-icons"
+  },
+  "keywords": [
+    "chrome-extension",
+    "time-tracking",
+    "ahgora",
+    "ponto-eletronico"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "sharp": "^0.33.1"
+  }
+}

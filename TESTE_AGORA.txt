@@ -1,0 +1,156 @@
+=====================================
+  COMO TESTAR A CORRECAO AGORA
+=====================================
+
+PASSO 1: RECARREGAR A EXTENSAO
+================================
+
+1. Abra o Chrome
+2. Digite: chrome://extensions/
+3. Encontre "Despertador Ponto"
+4. Clique no icone de RECARREGAR (circulo com seta)
+
+Pronto! A extensao foi atualizada com as correcoes!
+
+
+PASSO 2: TESTE RAPIDO (16 MINUTOS)
+===================================
+
+1. Clique no icone da extensao (barra de ferramentas)
+
+2. Va ate "Entrada Manual"
+
+3. Calcule o horario:
+   - Hora atual: [exemplo: 15:30]
+   - Menos 16 minutos = [exemplo: 15:14]
+   - Digite esse horario no campo
+
+4. Clique em "Adicionar"
+
+5. Verifique:
+   - Horario de saida deve aparecer
+   - Tempo restante deve mostrar "0h 16min" (aproximadamente)
+
+
+PASSO 3: MONITORAR OS LOGS
+===========================
+
+1. Volte para chrome://extensions/
+
+2. Na extensao "Despertador Ponto", clique em:
+   "service worker" (link azul)
+
+3. Uma janela de DevTools vai abrir
+
+4. Observe os logs (devem aparecer a cada minuto):
+   
+   Exemplo:
+   -----------------------------------------
+   (icone) [Background] Verificando: faltam 16 minutos
+   (icone) [Background] Verificando: faltam 15 minutos
+   (icone) [Background] Enviando notificacao de 15 minutos
+   -----------------------------------------
+
+5. Aguarde ate aparecer "Enviando notificacao"
+
+
+PASSO 4: VERIFICAR NOTIFICACAO
+================================
+
+Quando aparecer no log:
+"(icone) [Background] Enviando notificacao de 15 minutos"
+
+Uma notificacao deve aparecer na tela do Windows:
+┌─────────────────────────────────┐
+│  Atencao - Ponto em breve       │
+│                                 │
+│  Faltam 15 minutos para o      │
+│  horario de saida!             │
+└─────────────────────────────────┘
+
+
+SE NAO APARECER NOTIFICACAO:
+=============================
+
+1. Verifique se o Chrome tem permissao:
+   - Windows > Configuracoes > Sistema > Notificacoes
+   - "Google Chrome" deve estar ATIVADO
+
+2. Verifique Modo Nao Perturbe:
+   - Deve estar DESATIVADO
+
+3. Se o log mostrou "Enviando notificacao" mas nao apareceu:
+   - O problema e do Windows, nao da extensao
+   - A extensao esta funcionando corretamente!
+
+
+TESTE ALTERNATIVO (5 MINUTOS)
+==============================
+
+Se quiser testar a notificacao de 5 minutos:
+
+1. Limpe os registros de hoje (botao vermelho no popup)
+
+2. Adicione entrada manual:
+   - Hora atual menos 6 minutos
+   - Exemplo: se sao 15:30, adicione 15:24
+
+3. Configure:
+   - Horas de trabalho: 0.2 (12 minutos)
+   - Intervalo: 0 minutos
+   - Clique em "Salvar"
+
+4. Horario de saida sera em ~6 minutos
+
+5. Aguarde 1-2 minutos
+
+6. Deve receber notificacao de "Faltam 5 minutos"
+
+
+COMANDOS UTEIS NO CONSOLE
+==========================
+
+No console do Service Worker (chrome://extensions/ > service worker):
+
+# Ver todos os alarmes ativos:
+chrome.alarms.getAll(console.log)
+
+# Verificar flags de notificacao:
+chrome.storage.local.get(['notified_15min', 'notified_5min'], console.log)
+
+# Testar notificacao manualmente:
+chrome.notifications.create('test', {
+  type: 'basic',
+  iconUrl: 'icons/icon128.png',
+  title: 'Teste',
+  message: 'Notificacao de teste!',
+  priority: 2
+});
+
+
+RESULTADO ESPERADO
+==================
+
+(checkmark) Logs aparecem a cada minuto
+(checkmark) Log "Enviando notificacao" aparece entre 14-16 min
+(checkmark) Notificacao do Windows aparece na tela
+(checkmark) Som de notificacao toca
+(checkmark) Flag notified_15min = true
+
+
+PROBLEMAS?
+==========
+
+Se nao funcionar:
+
+1. Copie os logs do console
+2. Verifique se aparecem erros em vermelho
+3. Tire print da tela
+4. Entre em contato com desenvolvedor
+
+
+=====================================
+Versao: 1.0.1
+Status: CORRIGIDO
+Data: 15/01/2026
+=====================================

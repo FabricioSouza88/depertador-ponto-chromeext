@@ -1,0 +1,151 @@
+========================================
+  TESTE COM LOGS DETALHADOS
+========================================
+
+IMPORTANTE: Adicionei muitos logs de DEBUG!
+Agora vamos descobrir exatamente onde esta o problema.
+
+
+PASSO 1: RECARREGAR EXTENSAO
+========================================
+
+1. chrome://extensions/
+2. Despertador Ponto -> RECARREGAR (icone circular)
+
+
+PASSO 2: LIMPAR DADOS ANTERIORES
+========================================
+
+1. chrome://extensions/
+2. Despertador Ponto -> "service worker" (link azul)
+3. No console que abrir, digite:
+
+chrome.storage.local.clear()
+
+4. Aperte ENTER
+5. Deve aparecer: undefined
+
+
+PASSO 3: ABRIR SERVICE WORKER CONSOLE
+========================================
+
+Mantenha a janela do Service Worker ABERTA
+(a que voce usou no passo 2)
+
+Todos os logs vao aparecer aqui!
+
+
+PASSO 4: ADICIONAR ENTRADA DE TESTE
+========================================
+
+1. Clique no ICONE da extensao (barra ferramentas)
+
+2. Va ate "Entrada Manual"
+
+3. Calcule:
+   Hora atual: ____:____
+   Menos 16 min: ____:____
+   
+   Exemplo:
+   Se agora sao 15:30
+   15:30 - 16 min = 15:14
+
+4. Digite o horario calculado
+
+5. Clique em "Adicionar"
+
+6. OLHE O CONSOLE DO SERVICE WORKER!
+   Deve aparecer:
+   
+   (icone) [Background] Atualizando alarme...
+   (icone) [Background] Alarme configurado para XX:XX
+   (icone) [Background] Criando periodic-check inicial
+
+
+PASSO 5: AGUARDAR 1-2 MINUTOS
+========================================
+
+NO CONSOLE, voce deve ver A CADA MINUTO:
+
+⏰ [Background] Alarme disparado: periodic-check
+🔍 [Background] Executando verificacao periodica
+🔄 [Background] checkUpcomingExit() chamada
+📦 [Background] alarmInfo: { ... }
+🔍 [Background] Verificando: faltam XX minutos
+
+
+PASSO 6: IDENTIFICAR O PROBLEMA
+========================================
+
+COPIE E COLE AQUI todos os logs que aparecerem!
+
+Especialmente procure por:
+
+CASO A: Aparece "Sem alarmInfo"
+  -> Problema: entrada nao foi salva
+  
+CASO B: Aparece "Verificando: faltam 15 minutos"
+        MAS NAO aparece "Enviando notificacao"
+  -> Problema: flag ou condicao do range
+  
+CASO C: Aparece "Enviando notificacao"
+        E aparece "Notificacao criada com sucesso"
+        MAS voce NAO VE notificacao na tela
+  -> Problema: sistema operacional bloqueando
+  
+CASO D: Aparece "Erro ao criar notificacao"
+  -> Problema: permissoes do Chrome
+
+
+TESTE MANUAL DE NOTIFICACAO
+========================================
+
+No console do Service Worker, cole e execute:
+
+chrome.notifications.create('teste-manual', {
+  type: 'basic',
+  iconUrl: 'icons/icon128.png',
+  title: 'TESTE MANUAL',
+  message: 'Se voce ver isso, notificacoes funcionam!',
+  priority: 2,
+  requireInteraction: true
+});
+
+
+Se aparecer notificacao = Sistema OK!
+Se NAO aparecer = Problema no Windows
+
+
+COMANDOS DE DEBUG
+========================================
+
+Ver alarmes ativos:
+chrome.alarms.getAll(console.log)
+
+Ver dados salvos:
+chrome.storage.local.get(null, console.log)
+
+Ver alarmInfo especifico:
+chrome.storage.local.get('alarmInfo', console.log)
+
+
+RESPONDA ESTAS PERGUNTAS:
+========================================
+
+1. Que logs aparecem no console?
+   (copie e cole TUDO)
+
+2. O teste manual de notificacao funciona?
+   (comando acima)
+
+3. Qual sistema operacional?
+   Windows 10 ou 11?
+
+4. Notificacoes do Chrome estao ativas?
+   Windows > Configuracoes > Notificacoes > Chrome
+
+
+========================================
+Versao: 1.0.2 (com MUITOS logs!)
+Data: 15/01/2026
+========================================

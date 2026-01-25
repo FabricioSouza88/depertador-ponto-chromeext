@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "Despertador Ponto",
+  "version": "1.0.5",
+  "description": "Extensão para controlar e lembrar horários de batida de ponto online",
+  "permissions": [
+    "storage",
+    "alarms",
+    "notifications"
+  ],
+  "host_permissions": [
+    "https://app.ahgora.com.br/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://app.ahgora.com.br/novabatidaonline/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

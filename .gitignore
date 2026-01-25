@@ -1,0 +1,43 @@
+# Node modules
+node_modules/
+package-lock.json
+yarn.lock
+
+# Ícones gerados
+icons/*.png
+!icons/icon.svg
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build
+dist/
+build/
+
+# Arquivos temporários
+*.tmp
+*.temp
+
+# Ambiente
+.env
+.env.local
+
+# Chrome extension temp files
+*.crx
+*.pem
+*.zip

@@ -1,0 +1,89 @@
+========================================
+  TESTE FINAL - NOTIFICACOES VISIVEIS
+========================================
+
+PROBLEMA IDENTIFICADO:
+As notificacoes tinham prioridade BAIXA e desapareciam
+muito rapido ou iam direto para Central de Acoes.
+
+
+CORRIGIDO (v1.0.3):
+========================================
+
+✓ Prioridade ALTA (2)
+✓ requireInteraction = true (nao desaparece sozinha)
+✓ silent = false (com som)
+✓ Titulo mais chamativo
+✓ Mensagem mais visivel
+
+
+TESTE AGORA:
+========================================
+
+1. RECARREGAR EXTENSAO
+   chrome://extensions/ -> Recarregar
+
+2. LIMPAR STORAGE
+   Service Worker console:
+   chrome.storage.local.clear()
+
+3. ADICIONAR ENTRADA
+   - Popup da extensao
+   - Entrada manual 16 minutos atras
+   - Exemplo: se agora sao 15:30, adicione 15:14
+
+4. AGUARDAR 1-2 MINUTOS
+   Console deve mostrar:
+   (icone) Verificando: faltam 16 minutos
+   (icone) Verificando: faltam 15 minutos
+   (icone) Enviando notificacao de 15 minutos
+   (icone) Notificacao criada com sucesso
+   (icone) Notificacao confirmada como ativa
+
+5. NOTIFICACAO DEVE APARECER!
+   Agora com:
+   - Prioridade alta
+   - Fica visivel ate voce fechar
+   - Com som
+
+
+SE AINDA NAO APARECER:
+========================================
+
+1. Verifique Central de Acoes:
+   Win + N (Windows 11)
+   Win + A (Windows 10)
+
+2. Teste manual (deve funcionar igual):
+   chrome.notifications.create('teste', {
+     type: 'basic',
+     iconUrl: 'icons/icon128.png',
+     title: 'Teste',
+     message: 'Testando',
+     priority: 2,
+     requireInteraction: true
+   });
+
+
+DIFERENCA:
+========================================
+
+ANTES (v1.0.2):
+- priority: 1 (normal)
+- Sem requireInteraction
+- Desaparecia em 5 segundos
+- Ia para Central de Acoes silenciosamente
+
+DEPOIS (v1.0.3):
+- priority: 2 (alta)
+- requireInteraction: true
+- Fica visivel ate voce clicar
+- Som de notificacao
+
+
+AGORA DEVE FUNCIONAR! (emoji)
+========================================
+
+Versao: 1.0.3
+Data: 15/01/2026
+Status: Notificacoes VISIVEIS
