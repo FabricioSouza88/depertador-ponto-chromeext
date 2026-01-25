@@ -1,15 +1,17 @@
 # ⏰ Despertador Ponto
 
-Extensão do Google Chrome para controlar e lembrar horários de batida de ponto online, com integração ao sistema Ahgora.
+Extensão para Google Chrome que funciona como um despertador para batida de ponto online em **qualquer sistema**.
 
 ## 🎯 Funcionalidades
 
-- ✅ **Registro Automático**: Detecta automaticamente quando você bate o ponto na página do Ahgora
+- ✅ **Registro Automático**: Detecta automaticamente quando você bate o ponto no seu sistema
+- 🎯 **Seletor Visual**: Configure o botão de ponto com apenas um clique
 - ⏱️ **Múltiplas Entradas**: Suporta múltiplas marcações no mesmo dia
-- 🔔 **Alertas Inteligentes**: Notificações quando chegar a hora de bater o ponto de saída
+- 🔔 **Alertas Inteligentes**: Notificações 5min e 1min antes da hora de sair
 - 📊 **Cálculo Automático**: Calcula automaticamente o horário de saída baseado na entrada
 - ⚙️ **Configurável**: Defina suas horas de trabalho e tempo de intervalo
 - 📝 **Entrada Manual**: Adicione registros manualmente quando necessário
+- 🌐 **Universal**: Funciona em qualquer site de ponto online
 - 🎨 **Interface Moderna**: Design limpo e intuitivo
 
 ## 📋 Pré-requisitos
@@ -23,7 +25,7 @@ Extensão do Google Chrome para controlar e lembrar horários de batida de ponto
 
 1. Clone ou baixe este repositório:
 ```bash
-git clone https://github.com/seu-usuario/despertador-ponto.git
+git clone https://github.com/FabricioSouza88/depertador-ponto-chromeext.git
 cd despertador-ponto
 ```
 
@@ -59,17 +61,30 @@ npm run generate-icons
 
 ## 📖 Como Usar
 
-### 1. Registro Automático
+### 1. Configurar o Botão de Ponto (OBRIGATÓRIO)
 
-1. Acesse: https://app.ahgora.com.br/novabatidaonline/?defaultDevice=a208444
+**Primeira vez usando a extensão? Siga estes passos:**
 
-2. Clique no botão de "Clocking in" para bater o ponto
+1. Abra a página do seu sistema de ponto online
+2. Clique no ícone da extensão na barra de ferramentas
+3. Na seção "Botão de Ponto", clique em **"🖱️ Selecionar Botão na Página"**
+4. O popup fechará e a página ficará com uma camada escura
+5. Mova o mouse sobre os elementos - cada um será destacado com uma borda azul
+6. **Clique no botão de ponto** que você quer monitorar
+7. Uma notificação verde confirmará: "Botão configurado!" ✨
 
+**Pronto!** A partir de agora, quando você clicar nesse botão para bater o ponto, a extensão registrará automaticamente.
+
+### 2. Registro Automático
+
+Depois de configurar o botão:
+
+1. Acesse normalmente a página do seu sistema de ponto
+2. Clique no botão que você configurou
 3. A extensão detectará automaticamente e registrará a entrada! ✨
-
 4. Uma notificação aparecerá confirmando o registro
 
-### 2. Visualizar Registros
+### 3. Visualizar Registros
 
 1. Clique no ícone da extensão na barra de ferramentas
 
@@ -80,7 +95,7 @@ npm run generate-icons
    - Tempo restante até a saída
    - Barra de progresso
 
-### 3. Adicionar Entrada Manual
+### 4. Adicionar Entrada Manual
 
 1. Abra o popup da extensão
 
@@ -90,7 +105,7 @@ npm run generate-icons
 
 3. A entrada será registrada e o horário de saída recalculado
 
-### 4. Configurar Horários
+### 5. Configurar Horários
 
 1. Abra o popup da extensão
 
@@ -102,17 +117,25 @@ npm run generate-icons
 
 4. Os cálculos serão atualizados automaticamente
 
-### 5. Notificações
+### 6. Notificações
 
 A extensão enviará notificações nos seguintes momentos:
 
-- ⏰ **15 minutos antes** do horário de saída (aviso)
 - ⏰ **5 minutos antes** do horário de saída (aviso)
+- ⏰ **1 minuto antes** do horário de saída (aviso final)
 - 🔔 **No horário exato** de saída (alarme principal)
 
 Você pode:
 - Clicar em "Já bati o ponto" para dispensar
 - Clicar em "Lembrar em 5 min" para ser avisado novamente
+
+### 7. Gerenciar Configuração
+
+Para **remover** a configuração do botão:
+
+1. Abra o popup da extensão
+2. Na seção "Botão de Ponto", clique em **"Limpar Seleção"**
+3. Configure novamente quando necessário
 
 ## ⚙️ Configurações
 
@@ -121,7 +144,9 @@ Você pode:
 - **storage**: Para salvar registros e configurações localmente
 - **alarms**: Para criar lembretes e notificações programadas
 - **notifications**: Para mostrar alertas na área de notificações
-- **host_permissions** (app.ahgora.com.br): Para detectar cliques na página
+- **activeTab**: Para permitir seleção do botão na aba ativa
+- **scripting**: Para injetar o detector de cliques dinamicamente
+- **host_permissions** (http://*/* e https://*/*): Para funcionar em qualquer site
 
 ### Estrutura do Projeto
 
@@ -131,7 +156,7 @@ despertador-ponto/
 ├── popup.html            # Interface do popup
 ├── popup.css             # Estilos do popup
 ├── popup.js              # Lógica do popup
-├── content.js            # Script injetado na página Ahgora
+├── content.js            # Script injetado nas páginas
 ├── background.js         # Service worker (alarmes)
 ├── package.json          # Dependências Node.js
 ├── icons/                # Ícones da extensão
@@ -140,7 +165,16 @@ despertador-ponto/
 │   ├── icon32.png
 │   ├── icon48.png
 │   └── icon128.png
-└── README.md             # Este arquivo
+├── README.md             # Este arquivo
+└── docs/                 # Documentação completa
+    ├── CHANGELOG.md
+    ├── BUTTON_SELECTOR_GUIDE.md
+    ├── TROUBLESHOOTING_SELECTOR.md
+    ├── TEST_BUTTON_SELECTOR.md
+    ├── MIGRATION_v1.2.md
+    ├── DEVELOPER.md
+    ├── QUICK_START.md
+    └── INSTALL.txt
 ```
 
 ## 🛠️ Desenvolvimento
@@ -151,6 +185,7 @@ despertador-ponto/
 - **Chrome Storage API**: Armazenamento local
 - **Chrome Alarms API**: Agendamento de notificações
 - **Chrome Notifications API**: Notificações do sistema
+- **Chrome Scripting API**: Injeção dinâmica de scripts
 - **Content Scripts**: Integração com páginas web
 - **Service Workers**: Processos em background
 
@@ -162,6 +197,8 @@ despertador-ponto/
 - ✅ Código limpo e legível
 - ✅ Debounce para evitar clicks duplicados
 - ✅ Feedback visual para o usuário
+- ✅ Seletor CSS inteligente com fallbacks
+- ✅ Verificação de URL para segurança
 - ✅ Responsividade e UX moderna
 
 ### Debug e Logs
@@ -170,7 +207,7 @@ Para visualizar logs da extensão:
 
 1. **Popup**: Clique com botão direito no popup > Inspecionar
 2. **Background**: Acesse `chrome://extensions/` > Detalhes da extensão > Inspecionar visualizações
-3. **Content Script**: F12 na página do Ahgora > Console
+3. **Content Script**: F12 na página do seu sistema de ponto > Console
 
 Os logs são prefixados com `[Despertador Ponto]` para fácil identificação.
 
@@ -178,10 +215,12 @@ Os logs são prefixados com `[Despertador Ponto]` para fácil identificação.
 
 ### A extensão não detecta o clique no botão
 
-1. Verifique se você está na URL correta: `https://app.ahgora.com.br/novabatidaonline/`
-2. Recarregue a página
+1. Verifique se você configurou o botão usando o seletor visual
+2. Verifique se está na mesma página onde configurou o botão
 3. Abra o Console (F12) e procure por erros
-4. Verifique se o botão tem as classes CSS corretas
+4. Tente configurar o botão novamente
+
+**Ver mais**: [docs/TROUBLESHOOTING_SELECTOR.md](docs/TROUBLESHOOTING_SELECTOR.md)
 
 ### As notificações não aparecem
 
@@ -189,6 +228,7 @@ Os logs são prefixados com `[Despertador Ponto]` para fácil identificação.
    - Configurações > Privacidade e segurança > Configurações do site > Notificações
 2. Certifique-se de que as notificações estão ativadas para o Chrome
 3. Verifique se o "Não perturbe" está desativado no sistema
+4. No Windows: Configurações > Sistema > Notificações > Google Chrome > Ativar banners
 
 ### Os registros não aparecem
 
@@ -199,11 +239,49 @@ Os logs são prefixados com `[Despertador Ponto]` para fácil identificação.
    ```
 3. Verifique se há erros no console
 
+### O seletor não funciona em uma página
+
+1. Extensão só funciona em páginas http:// e https://
+2. Não funciona em chrome://, chrome-extension://, file://
+3. Recarregue a página e tente novamente
+4. Se persistir, veja [docs/TROUBLESHOOTING_SELECTOR.md](docs/TROUBLESHOOTING_SELECTOR.md)
+
 ### Recalcular horário de saída
 
 1. Faça alterações nas configurações (horas de trabalho ou intervalo)
 2. Clique no botão "Recalcular"
 3. Ou adicione/remova entradas para forçar o recálculo
+
+## 📚 Documentação Adicional
+
+### Para Usuários:
+- **[docs/BUTTON_SELECTOR_GUIDE.md](docs/BUTTON_SELECTOR_GUIDE.md)**: Guia completo sobre o seletor de botão
+- **[docs/TROUBLESHOOTING_SELECTOR.md](docs/TROUBLESHOOTING_SELECTOR.md)**: Soluções detalhadas de problemas
+- **[docs/QUICK_START.md](docs/QUICK_START.md)**: Guia rápido de instalação
+- **[docs/CHANGELOG.md](docs/CHANGELOG.md)**: Histórico de versões e mudanças
+
+### Para Desenvolvedores:
+- **[docs/DEVELOPER.md](docs/DEVELOPER.md)**: Guia para desenvolvedores
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**: Arquitetura da aplicação
+- **[docs/REFACTORING_PLAN.md](docs/REFACTORING_PLAN.md)**: Plano de refatoração modular
+- **[README_REFACTORING.md](README_REFACTORING.md)**: Status da refatoração em andamento
+
+### Testes e Debug:
+- **[docs/TEST_BUTTON_SELECTOR.md](docs/TEST_BUTTON_SELECTOR.md)**: Plano de testes completo
+- **[docs/DEBUG_PICKER.md](docs/DEBUG_PICKER.md)**: Debug do seletor visual
+
+## 🆕 Versão 1.2.0 - Mudanças Importantes
+
+### ⚠️ Breaking Changes
+
+- **Configuração obrigatória**: Não há mais detecção automática, você precisa configurar o botão
+- **Sem hardcoding**: Removido suporte específico para qualquer sistema
+- **Universal**: Funciona em qualquer site depois de configurado
+- **Por página**: Botão configurado funciona apenas na página onde foi selecionado
+
+### Migração
+
+Se você usava a versão anterior, veja [docs/MIGRATION_v1.2.md](docs/MIGRATION_v1.2.md) para instruções detalhadas.
 
 ## 📝 Funcionalidades Futuras
 
@@ -212,11 +290,12 @@ Ideias para próximas versões:
 - [ ] Histórico de registros dos últimos 30 dias
 - [ ] Exportar relatório em CSV/PDF
 - [ ] Integração com Google Calendar
-- [ ] Suporte a múltiplos sistemas de ponto (não apenas Ahgora)
+- [ ] Múltiplos botões configurados (um por domínio)
 - [ ] Estatísticas de horas trabalhadas
 - [ ] Dark mode
 - [ ] Sincronização entre dispositivos
 - [ ] Sons personalizados para notificações
+- [ ] Editor manual de CSS selector
 
 ## 🤝 Contribuindo
 
@@ -238,12 +317,14 @@ Desenvolvido com ❤️ para facilitar o controle de ponto online.
 
 ## 🙏 Agradecimentos
 
-- Material-UI pelos componentes visuais inspiradores
 - Chrome Extensions documentation
 - Comunidade open source
+- Todos os testadores e contribuidores
 
 ---
 
-**⚠️ Aviso**: Esta é uma extensão não oficial e não tem vínculo com a Ahgora ou qualquer sistema de ponto eletrônico. Use por sua conta e risco.
+**⚠️ Aviso**: Esta é uma extensão não oficial e não tem vínculo com nenhum sistema de ponto eletrônico. Use por sua conta e risco.
 
 **💡 Dica**: Não esqueça de dar uma ⭐ no projeto se ele foi útil para você!
+
+**📖 Leia**: [docs/BUTTON_SELECTOR_GUIDE.md](docs/BUTTON_SELECTOR_GUIDE.md) para entender como funciona o seletor de botão.

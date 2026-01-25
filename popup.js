@@ -135,7 +135,12 @@ class UIManager {
       workHours: document.getElementById('work-hours'),
       breakMinutes: document.getElementById('break-minutes'),
       saveSettings: document.getElementById('save-settings'),
-      clearToday: document.getElementById('clear-today')
+      clearToday: document.getElementById('clear-today'),
+      selectorStatus: document.getElementById('selector-status'),
+      selectorInfo: document.getElementById('selector-info'),
+      selectorDisplay: document.getElementById('selector-display'),
+      selectButton: document.getElementById('select-button'),
+      clearSelector: document.getElementById('clear-selector')
     };
 
     this.updateInterval = null;
@@ -145,6 +150,7 @@ class UIManager {
     this.setupEventListeners();
     this.updateTodayDate();
     this.loadSettings();
+    this.loadSelectorStatus();
     this.refreshUI();
     this.startAutoUpdate();
   }
@@ -154,6 +160,8 @@ class UIManager {
     this.elements.calculateExit.addEventListener('click', () => this.refreshUI());
     this.elements.saveSettings.addEventListener('click', () => this.saveSettings());
     this.elements.clearToday.addEventListener('click', () => this.clearToday());
+    this.elements.selectButton.addEventListener('click', () => this.startButtonPicker());
+    this.elements.clearSelector.addEventListener('click', () => this.clearButtonSelector());
     
     // Permite adicionar entrada com Enter
     this.elements.manualTime.addEventListener('keypress', (e) => {
@@ -322,6 +330,137 @@ class UIManager {
     if (this.updateInterval) {
       clearInterval(this.updateInterval);
     }
+  }
+
+  async loadSelectorStatus() {
+    const config = await StorageManager.get('buttonConfig');
+    
+    if (config && config.selector) {
+      this.elements.selectorStatus.textContent = 'Botão configurado';
+      this.elements.selectorStatus.className = 'status-value configured';
+      
+      // Show page info and selector
+      const displayText = `Página: ${config.pageTitle || 'N/A'}\nURL: ${config.pageUrl}\nSelector: ${config.selector}`;
+      this.elements.selectorDisplay.textContent = displayText;
+      this.elements.selectorInfo.style.display = 'block';
+      this.elements.clearSelector.style.display = 'block';
+    } else {
+      this.elements.selectorStatus.textContent = 'Não configurado';
+      this.elements.selectorStatus.className = 'status-value not-configured';
+      this.elements.selectorInfo.style.display = 'none';
+      this.elements.clearSelector.style.display = 'none';
+    }
+  }
+
+  async startButtonPicker() {
+    console.log('🚀 [Popup] startButtonPicker() chamado');
+    
+    try {
+      // Get active tab
+      console.log('🔍 [Popup] Buscando aba ativa...');
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      
+      if (!tab) {
+        console.error('❌ [Popup] Nenhuma aba ativa encontrada');
+        this.showNotification('Nenhuma aba ativa encontrada', 'error');
+        return;
+      }
+
+      console.log('✅ [Popup] Aba encontrada:', { id: tab.id, url: tab.url, title: tab.title });
+
+      // Check if it's a valid URL (not chrome:// or other restricted pages)
+      if (tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://')) {
+        console.error('❌ [Popup] URL restrita:', tab.url);
+        this.showNotification('Não é possível selecionar elementos em páginas do Chrome', 'error');
+        return;
+      }
+
+      console.log('🔍 [Popup] Verificando se content script está injetado...');
+      // Try to ping content script first to see if it's already injected
+      const isInjected = await this.checkContentScriptInjected(tab.id);
+      console.log(`📊 [Popup] Content script ${isInjected ? 'JÁ está' : 'NÃO está'} injetado`);
+      
+      if (!isInjected) {
+        console.log('📝 [Popup] Injetando content script...');
+        
+        try {
+          // Inject content script dynamically
+          await chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            files: ['content.js']
+          });
+          
+          console.log('✅ [Popup] Content script injetado com sucesso!');
+          
+          // Wait a bit for script to initialize
+          console.log('⏳ [Popup] Aguardando 500ms para script inicializar...');
+          await new Promise(resolve => setTimeout(resolve, 500));
+          console.log('✅ [Popup] Aguardo concluído');
+        } catch (error) {
+          console.error('❌ [Popup] Erro ao injetar content script:', error);
+          this.showNotification('Erro ao preparar página. Verifique as permissões.', 'error');
+          return;
+        }
+      }
+
+      // Send message to content script to start picker
+      console.log('📤 [Popup] Enviando mensagem startPicker para tab', tab.id);
+      chrome.tabs.sendMessage(tab.id, { action: 'startPicker' }, (response) => {
+        console.log('📥 [Popup] Resposta recebida:', response);
+        console.log('📥 [Popup] Runtime lastError:', chrome.runtime.lastError);
+        
+        if (chrome.runtime.lastError) {
+          console.error('❌ [Popup] Erro ao enviar mensagem:', chrome.runtime.lastError);
+          this.showNotification('Erro ao iniciar seletor. Recarregue a página e tente novamente.', 'error');
+          return;
+        }
+
+        if (response && response.success) {
+          console.log('✅ [Popup] Picker iniciado com sucesso! Fechando popup...');
+          this.showNotification('CLIQUE no botão que deseja monitorar', 'info');
+          
+          // Delay to show notification before closing
+          setTimeout(() => {
+            window.close(); // Close popup so user can select
+          }, 1000);
+        } else {
+          console.error('❌ [Popup] Resposta inválida do content script:', response);
+          this.showNotification('Erro: resposta inválida do content script', 'error');
+        }
+      });
+    } catch (error) {
+      console.error('❌ [Popup] Erro geral:', error);
+      this.showNotification('Erro ao iniciar seletor', 'error');
+    }
+  }
+
+  async checkContentScriptInjected(tabId) {
+    console.log('🔍 [Popup] checkContentScriptInjected - enviando ping para tab', tabId);
+    return new Promise((resolve) => {
+      chrome.tabs.sendMessage(tabId, { action: 'ping' }, (response) => {
+        console.log('📥 [Popup] Resposta do ping:', response);
+        console.log('📥 [Popup] Runtime lastError:', chrome.runtime.lastError);
+        
+        if (chrome.runtime.lastError) {
+          console.log('⚠️ [Popup] Ping falhou (esperado se script não injetado)');
+          resolve(false);
+        } else {
+          const isActive = response && response.status === 'active';
+          console.log(`✅ [Popup] Ping bem-sucedido, status: ${isActive ? 'active' : 'inactive'}`);
+          resolve(isActive);
+        }
+      });
+    });
+  }
+
+  async clearButtonSelector() {
+    if (!confirm('Tem certeza que deseja remover a configuração do botão?\n\nVocê precisará configurar novamente para usar a extensão.')) {
+      return;
+    }
+
+    await StorageManager.set('buttonConfig', null);
+    this.showNotification('Configuração removida', 'success');
+    await this.loadSelectorStatus();
   }
 }
 

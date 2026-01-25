@@ -254,3 +254,51 @@ header h1 {
 .entries-list::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+/* Button Configuration */
+.button-config {
+  margin-bottom: 12px;
+}
+
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.status-row .label {
+  font-weight: 500;
+  color: #555;
+}
+
+.status-value {
+  font-weight: 600;
+  color: #667eea;
+}
+
+.status-value.configured {
+  color: #00b894;
+}
+
+.status-value.not-configured {
+  color: #ff7675;
+}
+
+.selector-info {
+  background: #f8f9fa;
+  border-radius: 6px;
+  padding: 8px;
+  margin-bottom: 12px;
+  word-break: break-all;
+}
+
+.selector-info code {
+  font-size: 11px;
+  color: #555;
+  font-family: 'Courier New', monospace;
+  white-space: pre-wrap;
+  display: block;
+  line-height: 1.5;
+}
