@@ -13,6 +13,7 @@ Extensão para Google Chrome que funciona como um despertador para batida de pon
 - 📝 **Entrada Manual**: Adicione registros manualmente quando necessário
 - 🌐 **Universal**: Funciona em qualquer site de ponto online
 - 🎨 **Interface Moderna**: Design limpo e intuitivo
+- 🌍 **Multilíngue**: Suporte a Português (BR), English (US) e Español
 
 ## 📋 Pré-requisitos
 
@@ -268,7 +269,9 @@ Os logs são prefixados com `[Despertador Ponto]` para fácil identificação.
 
 ### Testes e Debug:
 - **[docs/TEST_BUTTON_SELECTOR.md](docs/TEST_BUTTON_SELECTOR.md)**: Plano de testes completo
-- **[docs/DEBUG_PICKER.md](docs/DEBUG_PICKER.md)**: Debug do seletor visual
+
+### Internacionalização:
+- **[docs/I18N_GUIDE.md](docs/I18N_GUIDE.md)**: Guia completo de i18n e como adicionar novos idiomas
 
 ## 🆕 Versão 1.2.0 - Mudanças Importantes
 

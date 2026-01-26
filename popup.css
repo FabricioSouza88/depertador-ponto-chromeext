@@ -126,7 +126,8 @@ header h1 {
 }
 
 .input-group input[type="time"],
-.input-group input[type="number"] {
+.input-group input[type="number"],
+.input-group .language-select {
   flex: 1;
   padding: 8px;
   border: 2px solid #e0e0e0;
@@ -135,7 +136,15 @@ header h1 {
   transition: border-color 0.2s;
 }
 
-.input-group input:focus {
+.language-select {
+  width: 100%;
+  cursor: pointer;
+  background: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.input-group input:focus,
+.input-group .language-select:focus {
   outline: none;
   border-color: #667eea;
 }
