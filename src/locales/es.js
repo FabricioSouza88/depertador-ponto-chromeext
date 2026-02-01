@@ -49,6 +49,7 @@ export const es = {
     // Sección de Botón de Fichaje
     button: {
       title: 'Botón de Fichaje',
+      tooltip: 'Configure el botón de fichaje de su sistema online. Haga clic en "Seleccionar Botón" y luego haga clic en el botón de fichaje en la página de su sistema. La extensión detectará automáticamente cuando registre entrada o salida.',
       status: 'Estado',
       configured: 'Botón configurado',
       notConfigured: 'No configurado',

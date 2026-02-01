@@ -50,6 +50,7 @@ export const ptBR = {
     // Seção de Botão de Ponto
     button: {
       title: 'Botão de Ponto',
+      tooltip: 'Configure o botão de ponto do seu sistema online. Clique em "Selecionar Botão" e depois clique no botão de ponto na página do seu sistema. A extensão detectará automaticamente quando você bater o ponto.',
       status: 'Status',
       configured: 'Botão configurado',
       notConfigured: 'Não configurado',

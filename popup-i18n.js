@@ -190,6 +190,13 @@ class UIManager {
       }
     });
     
+    // Atualiza tooltips
+    document.querySelectorAll('[data-i18n-tooltip]').forEach(element => {
+      const key = element.getAttribute('data-i18n-tooltip');
+      const translation = i18n.t(key);
+      element.setAttribute('data-tooltip-text', translation);
+    });
+    
     // Atualiza título da página
     document.title = i18n.t('popup.title');
   }

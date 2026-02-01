@@ -49,6 +49,7 @@ export const enUS = {
     // Clock Button Section
     button: {
       title: 'Clock Button',
+      tooltip: 'Configure your time tracking system button. Click "Select Button" and then click the clock button on your system\'s page. The extension will automatically detect when you clock in or out.',
       status: 'Status',
       configured: 'Button configured',
       notConfigured: 'Not configured',
