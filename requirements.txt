@@ -1,0 +1,5 @@
+# Dependências Python para Scripts do Projeto
+# Instalar com: pip install -r requirements.txt
+
+# Manipulação de Imagens
+Pillow>=10.0.0

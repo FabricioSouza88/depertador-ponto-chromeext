@@ -22,7 +22,13 @@ Extensão para Google Chrome que funciona como um despertador para batida de pon
 
 ## 🚀 Instalação
 
-### Passo 1: Preparar a Extensão
+### 📥 Da Chrome Web Store (Em Breve)
+
+🔜 A extensão estará disponível na Chrome Web Store em breve!
+
+### 🛠️ Para Desenvolvedores
+
+#### Passo 1: Preparar a Extensão
 
 1. Clone ou baixe este repositório:
 ```bash
@@ -30,7 +36,7 @@ git clone https://github.com/FabricioSouza88/depertador-ponto-chromeext.git
 cd despertador-ponto
 ```
 
-### Passo 2: Gerar Ícones (Opcional)
+#### Passo 2: Gerar Ícones (Opcional)
 
 A extensão precisa de ícones PNG. Você tem três opções:
 
@@ -48,7 +54,7 @@ npm run generate-icons
 **Opção C: Usar ícones temporários**
 - A extensão funcionará sem ícones, mas mostrará um ícone padrão do Chrome
 
-### Passo 3: Instalar no Chrome
+#### Passo 3: Instalar no Chrome
 
 1. Abra o Chrome e acesse: `chrome://extensions/`
 
@@ -59,6 +65,36 @@ npm run generate-icons
 4. Selecione a pasta do projeto `despertador-ponto`
 
 5. A extensão será instalada e aparecerá na barra de ferramentas! 🎉
+
+### 📦 Build para Publicação
+
+Para gerar o arquivo ZIP e publicar na Chrome Web Store:
+
+```powershell
+# Executar script de build
+.\build-extension.ps1
+```
+
+O arquivo `despertador-ponto.zip` será gerado na raiz do projeto, pronto para upload na Chrome Web Store.
+
+### 📸 Preparar Screenshots
+
+Para redimensionar screenshots para o padrão da Chrome Web Store (1280x800):
+
+```bash
+# Instalar dependências (primeira vez)
+pip install -r requirements.txt
+
+# Redimensionar screenshots
+python resize-screenshots.py
+```
+
+Os screenshots redimensionados estarão em `/screenshots/resized`.
+
+📚 **Documentação completa**: 
+- [Guia de Build](docs/BUILD_GUIDE.md)
+- [Guia de Screenshots](docs/SCREENSHOTS_GUIDE.md)
+- [Textos para Chrome Web Store](docs/CHROME_STORE_LISTING.md)
 
 ## 📖 Como Usar
 
