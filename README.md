@@ -15,6 +15,32 @@ Extensão para Google Chrome que funciona como um despertador para batida de pon
 - 🎨 **Interface Moderna**: Design limpo e intuitivo
 - 🌍 **Multilíngue**: Suporte a Português (BR), English (US) e Español
 
+## 📸 Screenshots
+
+### Interface Principal
+
+<p align="center">
+  <img src="screenshots/resized/screenshot01_1280x800.png" alt="Popup Principal" width="400">
+  <br>
+  <em>Popup principal com entradas registradas e horário de saída calculado</em>
+</p>
+
+### Configuração do Botão
+
+<p align="center">
+  <img src="screenshots/resized/screenshot02_1280x800.png" alt="Configuração do Botão" width="400">
+  <br>
+  <em>Seletor visual do botão de ponto</em>
+</p>
+
+### Configurações e Idiomas
+
+<p align="center">
+  <img src="screenshots/resized/screenshot03_1280x800.png" alt="Configurações" width="400">
+  <br>
+  <em>Configuração de horas de trabalho, intervalo e idioma</em>
+</p>
+
 ## 📋 Pré-requisitos
 
 - Google Chrome (ou navegador baseado em Chromium)
@@ -205,8 +231,11 @@ despertador-ponto/
 ├── README.md             # Este arquivo
 └── docs/                 # Documentação completa
     ├── CHANGELOG.md
+    ├── BUILD_GUIDE.md
+    ├── CHROME_STORE_LISTING.md
+    ├── SCREENSHOTS_GUIDE.md
+    ├── TOOLTIP_FEATURE.md
     ├── BUTTON_SELECTOR_GUIDE.md
-    ├── TROUBLESHOOTING_SELECTOR.md
     ├── TEST_BUTTON_SELECTOR.md
     ├── MIGRATION_v1.2.md
     ├── DEVELOPER.md
@@ -248,52 +277,10 @@ Para visualizar logs da extensão:
 
 Os logs são prefixados com `[Despertador Ponto]` para fácil identificação.
 
-## 🐛 Troubleshooting
-
-### A extensão não detecta o clique no botão
-
-1. Verifique se você configurou o botão usando o seletor visual
-2. Verifique se está na mesma página onde configurou o botão
-3. Abra o Console (F12) e procure por erros
-4. Tente configurar o botão novamente
-
-**Ver mais**: [docs/TROUBLESHOOTING_SELECTOR.md](docs/TROUBLESHOOTING_SELECTOR.md)
-
-### As notificações não aparecem
-
-1. Verifique as permissões de notificação do Chrome:
-   - Configurações > Privacidade e segurança > Configurações do site > Notificações
-2. Certifique-se de que as notificações estão ativadas para o Chrome
-3. Verifique se o "Não perturbe" está desativado no sistema
-4. No Windows: Configurações > Sistema > Notificações > Google Chrome > Ativar banners
-
-### Os registros não aparecem
-
-1. Abra o DevTools do popup
-2. Verifique o `chrome.storage.local`:
-   ```javascript
-   chrome.storage.local.get(null, console.log)
-   ```
-3. Verifique se há erros no console
-
-### O seletor não funciona em uma página
-
-1. Extensão só funciona em páginas http:// e https://
-2. Não funciona em chrome://, chrome-extension://, file://
-3. Recarregue a página e tente novamente
-4. Se persistir, veja [docs/TROUBLESHOOTING_SELECTOR.md](docs/TROUBLESHOOTING_SELECTOR.md)
-
-### Recalcular horário de saída
-
-1. Faça alterações nas configurações (horas de trabalho ou intervalo)
-2. Clique no botão "Recalcular"
-3. Ou adicione/remova entradas para forçar o recálculo
-
 ## 📚 Documentação Adicional
 
 ### Para Usuários:
 - **[docs/BUTTON_SELECTOR_GUIDE.md](docs/BUTTON_SELECTOR_GUIDE.md)**: Guia completo sobre o seletor de botão
-- **[docs/TROUBLESHOOTING_SELECTOR.md](docs/TROUBLESHOOTING_SELECTOR.md)**: Soluções detalhadas de problemas
 - **[docs/QUICK_START.md](docs/QUICK_START.md)**: Guia rápido de instalação
 - **[docs/CHANGELOG.md](docs/CHANGELOG.md)**: Histórico de versões e mudanças
 
