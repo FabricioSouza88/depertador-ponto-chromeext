@@ -85,6 +85,11 @@ export const enUS = {
       entryReminder: {
         title: 'Time to clock in! ⏰',
         message: 'You haven\'t clocked in yet today. Don\'t forget to punch in!'
+      },
+      buttons: {
+        openSystem: '🌐 Open System',
+        alreadyPunched: '✅ Done',
+        remindLater: '⏰ Remind in 5min'
       }
     }
   },

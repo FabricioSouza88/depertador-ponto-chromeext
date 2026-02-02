@@ -43,7 +43,7 @@ export const es = {
       workHoursUnit: 'horas',
       breakMinutes: 'Descanso (min)',
       breakMinutesUnit: 'minutos',
-      usualEntryTime: 'Hora de Entrada Habitual',
+      usualEntryTime: 'Entrada Habitual',
       usualEntryTimeTooltip: 'Defina su hora habitual de entrada. La extensión le recordará si lo olvida.',
       save: 'Guardar Configuración',
       clearToday: 'Limpiar Registros de Hoy'
@@ -85,6 +85,11 @@ export const es = {
       entryReminder: {
         title: '¡Hora de fichar! ⏰',
         message: 'Aún no ha registrado su entrada de hoy. ¡No olvide fichar!'
+      },
+      buttons: {
+        openSystem: '🌐 Abrir Sistema',
+        alreadyPunched: '✅ Listo',
+        remindLater: '⏰ Recordar en 5min'
       }
     }
   },

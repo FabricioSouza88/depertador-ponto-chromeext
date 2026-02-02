@@ -5,6 +5,51 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [2.3.0] - 2026-01-26
+
+### 🆕 Nova Funcionalidade: Botão "Abrir Sistema" nas Notificações
+
+- **Botões em TODAS as notificações**: Agora todas as notificações do sistema têm botões interativos
+- **Acesso rápido**: Botão 🌐 "Abrir Sistema" presente em todas as notificações
+- **Um clique para o sistema**: Abre a URL do sistema de ponto diretamente da notificação
+- **Multilíngue**: Botões traduzidos em PT-BR, EN-US e ES
+
+### 📋 Notificações Atualizadas
+
+**1. Notificação de Saída** (hora de sair):
+- 🌐 Abrir Sistema
+- ✅ Já bati
+
+**2. Notificações de Aviso** (5 min e 1 min antes):
+- 🌐 Abrir Sistema
+- ⏰ Lembrar em 5min
+
+**3. Notificação de Lembrete de Entrada**:
+- 🌐 Abrir Sistema
+
+### 🔧 Melhorias Técnicas
+
+- Nova função `getButtonTranslations()` para traduções de botões
+- Listener de notificações atualizado com lógica inteligente
+- Botão índice 0 sempre abre o sistema (padrão)
+- Logs detalhados para debug
+- Tratamento condicional por tipo de notificação
+
+### 🎨 UX
+
+- Botões com ícones visuais (🌐, ✅, ⏰)
+- Textos curtos e diretos
+- Ação imediata ao clicar
+- Notificação fecha automaticamente após ação
+
+### 🌍 Traduções
+
+| Idioma | Abrir Sistema | Já bati | Lembrar em 5min |
+|--------|---------------|---------|-----------------|
+| PT-BR  | 🌐 Abrir Sistema | ✅ Já bati | ⏰ Lembrar em 5min |
+| EN-US  | 🌐 Open System | ✅ Done | ⏰ Remind in 5min |
+| ES     | 🌐 Abrir Sistema | ✅ Listo | ⏰ Recordar en 5min |
+
 ## [2.2.1] - 2026-01-26
 
 ### 🆕 Nova Funcionalidade: Botão de Acesso Rápido ao Sistema

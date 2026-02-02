@@ -128,6 +128,9 @@ class AlarmManager {
   }
 
   static async showExitNotification() {
+    const selectedLanguage = await StorageHelper.get('selectedLanguage') || 'pt-BR';
+    const buttonTexts = await this.getButtonTranslations(selectedLanguage);
+    
     const options = {
       type: 'basic',
       iconUrl: 'icons/icon128.png',
@@ -136,8 +139,8 @@ class AlarmManager {
       priority: 2,
       requireInteraction: true,
       buttons: [
-        { title: '✅ Já bati o ponto' },
-        { title: '⏰ Lembrar em 5 min' }
+        { title: buttonTexts.openSystem },
+        { title: buttonTexts.alreadyPunched }
       ]
     };
 
@@ -150,6 +153,9 @@ class AlarmManager {
   static async showWarningNotification(minutesRemaining) {
     console.log(`🔔 [Background] showWarningNotification() chamada para ${minutesRemaining} minutos`);
     
+    const selectedLanguage = await StorageHelper.get('selectedLanguage') || 'pt-BR';
+    const buttonTexts = await this.getButtonTranslations(selectedLanguage);
+    
     const options = {
       type: 'basic',
       iconUrl: 'icons/icon128.png',
@@ -157,7 +163,11 @@ class AlarmManager {
       message: `⚠️ Faltam ${minutesRemaining} minutos para o horário de saída!\n\nNão esqueça de bater o ponto!`,
       priority: 2,  // Prioridade ALTA (era 1)
       requireInteraction: true,  // Não desaparece sozinha
-      silent: false  // Com som
+      silent: false,  // Com som
+      buttons: [
+        { title: buttonTexts.openSystem },
+        { title: buttonTexts.remindLater }
+      ]
     };
 
     const notificationId = 'warning-' + Date.now();
@@ -239,6 +249,7 @@ class AlarmManager {
   static async showEntryReminder() {
     // Obter idioma atual para notificação traduzida
     const selectedLanguage = await StorageHelper.get('selectedLanguage') || 'pt-BR';
+    const buttonTexts = await this.getButtonTranslations(selectedLanguage);
     
     // Traduções simples (já que não temos acesso ao i18n aqui)
     const translations = {
@@ -265,12 +276,37 @@ class AlarmManager {
       message: text.message,
       priority: 2,
       requireInteraction: true,
-      silent: false
+      silent: false,
+      buttons: [
+        { title: buttonTexts.openSystem }
+      ]
     };
 
     const notificationId = 'entry-reminder-' + Date.now();
     chrome.notifications.create(notificationId, options);
     console.log('✅ [Background] Lembrete de entrada enviado');
+  }
+
+  static async getButtonTranslations(language) {
+    const translations = {
+      'pt-BR': {
+        openSystem: '🌐 Abrir Sistema',
+        alreadyPunched: '✅ Já bati',
+        remindLater: '⏰ Lembrar em 5min'
+      },
+      'en-US': {
+        openSystem: '🌐 Open System',
+        alreadyPunched: '✅ Done',
+        remindLater: '⏰ Remind in 5min'
+      },
+      'es': {
+        openSystem: '🌐 Abrir Sistema',
+        alreadyPunched: '✅ Listo',
+        remindLater: '⏰ Recordar en 5min'
+      }
+    };
+    
+    return translations[language] || translations['pt-BR'];
   }
 }
 
@@ -369,12 +405,36 @@ async function checkUpcomingExit() {
 
 // Listener para notificações
 chrome.notifications.onButtonClicked.addListener(async (notificationId, buttonIndex) => {
-  if (notificationId === CONFIG.notificationId) {
-    if (buttonIndex === 0) {
-      // Usuário confirmou que bateu o ponto
+  console.log(`🔔 [Background] Botão clicado - Notificação: ${notificationId}, Botão: ${buttonIndex}`);
+  
+  // Botão 0 em todas notificações = "Abrir Sistema"
+  if (buttonIndex === 0) {
+    const config = await StorageHelper.get('buttonConfig');
+    if (config && config.pageUrl) {
+      console.log('🌐 [Background] Abrindo sistema de ponto:', config.pageUrl);
+      chrome.tabs.create({ url: config.pageUrl });
       chrome.notifications.clear(notificationId);
-    } else if (buttonIndex === 1) {
-      // Lembrar em 5 minutos
+    } else {
+      console.warn('⚠️ [Background] Nenhuma URL configurada para abrir');
+    }
+    return;
+  }
+  
+  // Tratamento específico para notificação principal de saída
+  if (notificationId === CONFIG.notificationId) {
+    if (buttonIndex === 1) {
+      // Botão "Já bati o ponto"
+      console.log('✅ [Background] Usuário confirmou que bateu o ponto');
+      await StorageHelper.set('notified_exit', true);
+      chrome.notifications.clear(notificationId);
+    }
+  }
+  
+  // Tratamento para notificações de aviso (warning-*)
+  if (notificationId.startsWith('warning-')) {
+    if (buttonIndex === 1) {
+      // Botão "Lembrar em 5 min"
+      console.log('⏰ [Background] Usuário solicitou lembrete em 5 min');
       chrome.notifications.clear(notificationId);
       chrome.alarms.create('reminder-5min', {
         delayInMinutes: 5
