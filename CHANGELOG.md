@@ -5,6 +5,44 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [2.3.1] - 2026-01-26
+
+### 🐛 Correção Crítica: Listener Persiste Após Refresh
+
+- **Problema resolvido**: Listener do botão de ponto não funcionava após refresh da página
+- **Solução**: Content script agora é automaticamente injetado em todas as páginas via manifest
+- **Benefício**: Detecção de clique funciona imediatamente após carregar/recarregar página
+- **Técnico**: Adicionado `content_scripts` no manifest com `<all_urls>` e `run_at: document_idle`
+
+### 🔧 Melhorias Técnicas
+
+- Content script persiste através de recarregamentos de página
+- Não requer injeção manual após refresh
+- Verificação inteligente: script só age se URL corresponder à configuração
+- Performance otimizada: script inicia em `document_idle`
+- Compatível com injeção dinâmica do picker (sem conflitos)
+
+### 📋 Comportamento
+
+**Antes**:
+```
+1. Usuário configura botão ✓
+2. Botão detecta cliques ✓
+3. Usuário dá F5 (refresh)
+4. Listener perdido ✗
+5. Cliques não detectados ✗
+```
+
+**Agora**:
+```
+1. Usuário configura botão ✓
+2. Botão detecta cliques ✓
+3. Usuário dá F5 (refresh)
+4. Content script recarregado automaticamente ✓
+5. Listener reinicializado ✓
+6. Cliques detectados normalmente ✓
+```
+
 ## [2.3.0] - 2026-01-26
 
 ### 🆕 Nova Funcionalidade: Botão "Abrir Sistema" nas Notificações

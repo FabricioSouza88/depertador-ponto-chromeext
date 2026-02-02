@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Despertador Ponto",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "Extensão para controlar e lembrar horários de batida de ponto online - Multilíngue: PT/EN/ES",
   "permissions": [
     "storage",
@@ -32,5 +32,11 @@
   "background": {
     "service_worker": "background.js"
   },
-  "content_scripts": []
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
 }
