@@ -5,6 +5,68 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [2.3.2] - 2026-01-26
+
+### 🔧 Correção Importante: Gerador de Selector Mais Robusto
+
+- **Problema resolvido**: Selector quebrava quando sites atualizavam (classes CSS dinâmicas mudavam)
+- **Causa**: Classes geradas por CSS-in-JS (Material-UI, Styled-Components) mudam a cada build
+- **Exemplos**: `jss154`, `jss137`, `css-abc123`, `makeStyles-root-1`
+
+### 🎯 Melhorias Implementadas
+
+**1. Filtro de Classes Dinâmicas**:
+- Detecta e ignora classes CSS-in-JS automáticas
+- Padrões filtrados:
+  - Material-UI: `jss*`, `makeStyles-*`
+  - CSS-in-JS: `css-*`, `sc-*`
+  - Emotion: `emotion-*`
+  - Hashes puros: `a1b2c3`, `abc123def`
+
+**2. Priorização de Atributos Estáveis**:
+- **1ª prioridade**: IDs únicos
+- **2ª prioridade**: Atributos ARIA (aria-label, role)
+- **3ª prioridade**: Atributos data-* customizados
+- **4ª prioridade**: Texto do botão (quando único)
+- **5ª prioridade**: Classes estáveis (MuiButton, MuiButtonBase)
+- **Último recurso**: Estrutura DOM com nth-of-type
+
+**3. Métodos Auxiliares**:
+- `isStableClass()`: Verifica se classe é estável
+- `getStableClasses()`: Extrai apenas classes seguras
+
+### 📊 Impacto
+
+**Antes**:
+```css
+div.MuiBox-root.jss154.jss137 > button.MuiButton-root
+                ^^^^^^ ^^^^^^  ← Mudam a cada build!
+```
+
+**Agora**:
+```css
+div.MuiBox-root > button.MuiButtonBase-root.MuiButton-root
+                         ^^^^^^^^^^^^^^^^^^^ ^^^^^^^^
+                         Classes estáveis ✓
+```
+
+### 🎯 Benefícios
+
+- ✅ Selectores mais estáveis ao longo do tempo
+- ✅ Resistente a atualizações do site
+- ✅ Menos necessidade de reconfiguração
+- ✅ Melhor compatibilidade com frameworks modernos
+
+### 🔄 Recomendação
+
+Se você já tinha um botão configurado e ele parou de funcionar:
+1. Vá em "Botão de Ponto"
+2. Clique em "Limpar Seleção"
+3. Clique em "Selecionar Botão"
+4. Selecione o botão novamente
+
+O novo selector será muito mais estável! 🚀
+
 ## [2.3.1] - 2026-01-26
 
 ### 🐛 Correção Crítica: Listener Persiste Após Refresh

@@ -585,6 +585,41 @@ class ElementPicker {
     }
   };
 
+  /**
+   * Verifica se uma classe CSS é estável (não dinâmica)
+   */
+  isStableClass(className) {
+    if (!className) return false;
+    
+    // Classes dinâmicas que devem ser evitadas
+    const dynamicPatterns = [
+      /^jss\d+$/,                    // Material-UI: jss154, jss137
+      /^css-[a-z0-9]+$/i,            // CSS-in-JS: css-abc123
+      /^makeStyles-\w+-\d+$/,        // Material-UI makeStyles: makeStyles-root-1
+      /^[a-z0-9]{6,}$/i,             // Hash puro: a1b2c3d4e5
+      /^sc-[a-z0-9]+$/i,             // Styled-components: sc-abc123
+      /^emotion-\d+$/,               // Emotion CSS: emotion-0
+      /^\w+-\d+-\d+-\d+$/           // Tailwind JIT: mt-4-5-6
+    ];
+    
+    // Verifica se a classe corresponde a algum padrão dinâmico
+    return !dynamicPatterns.some(pattern => pattern.test(className));
+  }
+
+  /**
+   * Extrai classes estáveis de um elemento
+   */
+  getStableClasses(element) {
+    if (!element.className || typeof element.className !== 'string') {
+      return [];
+    }
+    
+    return element.className.trim().split(/\s+/)
+      .filter(c => this.isStableClass(c))
+      .filter(c => !c.startsWith('hover') && !c.startsWith('active'))
+      .slice(0, 3); // Máximo 3 classes para performance
+  }
+
   generateSelector(element) {
     // Try stable attributes first
     if (element.id) {
@@ -608,6 +643,34 @@ class ElementPicker {
       }
     }
 
+    // Try text content for buttons (very stable)
+    if (element.tagName.toLowerCase() === 'button') {
+      const text = element.textContent.trim();
+      if (text && text.length > 0 && text.length < 50) {
+        // Use XPath-like approach with text
+        const buttons = Array.from(document.querySelectorAll('button'));
+        const matchingButtons = buttons.filter(btn => btn.textContent.trim() === text);
+        
+        if (matchingButtons.length === 1) {
+          // Generate selector with text validation
+          console.log(`📝 [Despertador Ponto] Usando texto do botão como referência: "${text}"`);
+          // Still return structural selector but log the text for reference
+        }
+      }
+    }
+
+    // Try data attributes (very stable)
+    const dataAttrs = Array.from(element.attributes)
+      .filter(attr => attr.name.startsWith('data-') && attr.value)
+      .filter(attr => !attr.name.includes('test') && !attr.name.includes('id')); // Avoid test IDs
+    
+    for (const attr of dataAttrs) {
+      const selector = `${element.tagName.toLowerCase()}[${attr.name}="${CSS.escape(attr.value)}"]`;
+      if (document.querySelectorAll(selector).length === 1) {
+        return selector;
+      }
+    }
+
     // Build path with classes
     const parts = [];
     let current = element;
@@ -617,15 +680,10 @@ class ElementPicker {
     while (current && current !== document.body && depth < maxDepth) {
       let selector = current.tagName.toLowerCase();
 
-      // Add classes if they help uniqueness
-      if (current.className && typeof current.className === 'string') {
-        const classes = current.className.trim().split(/\s+/)
-          .filter(c => c && !c.startsWith('hover') && !c.startsWith('active'))
-          .slice(0, 3);
-        
-        if (classes.length > 0) {
-          selector += '.' + classes.map(c => CSS.escape(c)).join('.');
-        }
+      // Add stable classes if they help uniqueness
+      const classes = this.getStableClasses(current);
+      if (classes.length > 0) {
+        selector += '.' + classes.map(c => CSS.escape(c)).join('.');
       }
 
       parts.unshift(selector);
