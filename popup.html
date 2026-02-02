@@ -70,12 +70,9 @@
     <div class="card">
       <h2>⚙️ <span data-i18n="popup.settings.title">Configurações</span></h2>
       <div class="input-group">
-        <label for="language-select" data-i18n="popup.language.label">Escolha o idioma:</label>
-        <select id="language-select" class="language-select">
-          <option value="pt-BR" data-i18n="popup.language.portuguese">Português (Brasil)</option>
-          <option value="en-US" data-i18n="popup.language.english">English (USA)</option>
-          <option value="es" data-i18n="popup.language.spanish">Español</option>
-        </select>
+        <label for="usual-entry-time" data-i18n="popup.settings.usualEntryTime">Entrada Habitual:</label>
+        <input type="time" id="usual-entry-time" value="08:00" />
+        <span class="help-icon" data-tooltip data-i18n-tooltip="popup.settings.usualEntryTimeTooltip">?</span>
       </div>
       <div class="input-group">
         <label for="work-hours" data-i18n="popup.settings.workHours">Horas de trabalho:</label>
@@ -88,9 +85,12 @@
         <span class="unit" data-i18n="popup.settings.breakMinutesUnit">minutos</span>
       </div>
       <div class="input-group">
-        <label for="usual-entry-time" data-i18n="popup.settings.usualEntryTime">Horário de Entrada Habitual:</label>
-        <input type="time" id="usual-entry-time" value="08:00" />
-        <span class="help-icon" data-tooltip data-i18n-tooltip="popup.settings.usualEntryTimeTooltip">?</span>
+        <label for="language-select" data-i18n="popup.language.label">Escolha o idioma:</label>
+        <select id="language-select" class="language-select">
+          <option value="pt-BR" data-i18n="popup.language.portuguese">Português (Brasil)</option>
+          <option value="en-US" data-i18n="popup.language.english">English (USA)</option>
+          <option value="es" data-i18n="popup.language.spanish">Español</option>
+        </select>
       </div>
       <button id="save-settings" class="btn btn-success" data-i18n="popup.settings.save">Salvar</button>
     </div>
