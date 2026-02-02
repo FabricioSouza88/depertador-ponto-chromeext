@@ -19,8 +19,6 @@ class ClickDetector {
   }
 
   async init() {
-    console.log('🚀 [Despertador Ponto] Content script inicializado');
-    
     // Verifica se contexto é válido antes de iniciar
     if (!chrome.runtime?.id) {
       console.error('❌ [Despertador Ponto] Contexto inválido ao iniciar. Abortando.');
@@ -44,11 +42,11 @@ class ClickDetector {
         return;
       }
       
-      // Debounce para evitar execuções excessivas
+      // Debounce balanceado: 500ms (performance vs responsividade)
       clearTimeout(this.mutationDebounceTimer);
       this.mutationDebounceTimer = setTimeout(async () => {
         await this.findAndAttachListener();
-      }, 3000); // 3 segundos de debounce
+      }, 500); // 500ms - meio-termo entre 100ms e 3s
     });
 
     this.observer.observe(document.body, {
@@ -66,7 +64,8 @@ class ClickDetector {
     if (button) {
       // Verifica se já tem listener anexado
       if (!button.dataset.despertadorAttached) {
-        console.log('✅ [Despertador Ponto] Botão de ponto encontrado!', button);
+        // Log apenas no primeiro attach (não a cada verificação)
+        console.log('✅ [Despertador Ponto] Botão configurado e listener anexado');
         this.attachClickListener(button);
         this.buttonFound = true;
         button.dataset.despertadorAttached = 'true';
@@ -86,35 +85,22 @@ class ClickDetector {
     const config = await this.getButtonConfig();
     
     if (!config || !config.selector) {
-      console.log('ℹ️ [Despertador Ponto] Nenhum botão configurado');
       return null;
     }
 
     // Verifica se está na página correta
     const currentUrl = window.location.href;
     if (!this.isMatchingUrl(currentUrl, config.pageUrl)) {
-      console.log('ℹ️ [Despertador Ponto] Página atual não corresponde à configuração', {
-        current: currentUrl,
-        configured: config.pageUrl
-      });
       return null;
     }
-
-    console.log('🔍 [Despertador Ponto] Procurando botão configurado:', config.selector);
     
     try {
       const button = document.querySelector(config.selector);
-      if (button) {
-        console.log('✅ [Despertador Ponto] Botão encontrado!');
-        return button;
-      } else {
-        console.warn('⚠️ [Despertador Ponto] Selector não encontrou elemento na página');
-      }
+      return button || null;
     } catch (error) {
       console.error('❌ [Despertador Ponto] Erro ao usar selector:', error);
+      return null;
     }
-
-    return null;
   }
 
   async getButtonConfig() {
@@ -193,8 +179,6 @@ class ClickDetector {
     if (buttonLabel) {
       buttonLabel.addEventListener('click', (e) => this.handleClick(e), true);
     }
-
-    console.log('🎯 [Despertador Ponto] Listener anexado ao botão');
   }
 
   /**
@@ -205,7 +189,6 @@ class ClickDetector {
     
     // Debounce - evita clicks duplicados
     if (now - this.lastClickTime < CONFIG.debounceTime) {
-      console.log('⏱️ [Despertador Ponto] Click ignorado (debounce)');
       return;
     }
 
@@ -359,19 +342,15 @@ class ClickDetector {
       button.style.position = 'relative';
     }
     button.appendChild(indicator);
-    
-    console.log('🎨 [Despertador Ponto] Indicador visual adicionado');
   }
 
   /**
    * Limpa observers
    */
   cleanup() {
-    console.log('🧹 [Despertador Ponto] Limpando detector...');
     if (this.observer) {
       this.observer.disconnect();
       this.observer = null;
-      console.log('✅ [Despertador Ponto] Observer desconectado');
     }
     if (this.mutationDebounceTimer) {
       clearTimeout(this.mutationDebounceTimer);
@@ -391,38 +370,29 @@ class ElementPicker {
   }
 
   start() {
-    console.log('🚀 [Picker] start() chamado');
-    
     if (this.isActive) {
-      console.warn('⚠️ [Picker] Picker já está ativo, ignorando');
       return;
     }
 
     this.isActive = true;
-    console.log('✅ [Picker] isActive = true');
 
     // Create overlay
-    console.log('🎨 [Picker] Criando overlay...');
     this.createOverlay();
 
     // Add event listeners
-    console.log('🎧 [Picker] Adicionando event listeners...');
     document.addEventListener('mouseover', this.handleMouseOver, true);
     document.addEventListener('mouseout', this.handleMouseOut, true);
     document.addEventListener('click', this.handleClick, true);
     document.addEventListener('keydown', this.handleKeyDown, true);
-    console.log('✅ [Picker] Event listeners adicionados');
 
     // Prevent scrolling while picker is active
     document.body.style.overflow = 'hidden';
-    console.log('🎯 [Picker] Picker PRONTO! Mova o mouse sobre os elementos e CLIQUE no botão desejado');
   }
 
   stop() {
     if (!this.isActive) return;
 
     this.isActive = false;
-    console.log('🛑 [Despertador Ponto] Picker parado');
 
     // Remove event listeners
     document.removeEventListener('mouseover', this.handleMouseOver, true);
@@ -452,8 +422,6 @@ class ElementPicker {
   }
 
   createOverlay() {
-    console.log('🎨 [Picker] createOverlay() iniciado');
-    
     this.overlay = document.createElement('div');
     this.overlay.id = 'despertador-ponto-overlay';
     this.overlay.style.cssText = `
@@ -467,7 +435,6 @@ class ElementPicker {
       cursor: crosshair;
       pointer-events: none;
     `;
-    console.log('✅ [Picker] Overlay criado (pointer-events: none)');
 
     this.tooltip = document.createElement('div');
     this.tooltip.id = 'despertador-ponto-tooltip';
@@ -487,20 +454,13 @@ class ElementPicker {
       pointer-events: none;
     `;
     this.tooltip.textContent = '🖱️ CLIQUE no botão que deseja monitorar • ESC para cancelar';
-    console.log('✅ [Picker] Tooltip criado');
 
-    console.log('📍 [Picker] Adicionando overlay e tooltip ao body...');
     document.body.appendChild(this.overlay);
     document.body.appendChild(this.tooltip);
-    console.log('✅ [Picker] Overlay e tooltip adicionados ao DOM');
-    console.log('📊 [Picker] Overlay no DOM?', document.getElementById('despertador-ponto-overlay') !== null);
-    console.log('📊 [Picker] Tooltip no DOM?', document.getElementById('despertador-ponto-tooltip') !== null);
-    console.log('🎯 [Picker] AGORA você pode clicar nos elementos da página!');
   }
 
   handleMouseOver = (e) => {
     if (!this.isActive) {
-      console.log('⚠️ [Picker] handleMouseOver ignorado - picker não está ativo');
       return;
     }
     
@@ -509,11 +469,8 @@ class ElementPicker {
     // Ignore our own elements
     if (target.id === 'despertador-ponto-overlay' || 
         target.id === 'despertador-ponto-tooltip') {
-      console.log('⚠️ [Picker] Mouse sobre overlay/tooltip - ignorando');
       return;
     }
-
-    console.log('🖱️ [Picker] Mouse sobre elemento:', target.tagName, target.className);
 
     this.hoveredElement = target;
 
@@ -525,7 +482,6 @@ class ElementPicker {
     // Highlight element
     target.style.outline = '3px solid #667eea';
     target.style.outlineOffset = '2px';
-    console.log('✨ [Picker] Elemento destacado com borda azul');
   };
 
   handleMouseOut = (e) => {
@@ -537,56 +493,36 @@ class ElementPicker {
     if (this.originalOutline.has(target)) {
       const originalOutline = this.originalOutline.get(target);
       target.style.outline = originalOutline;
-      console.log('🔄 [Picker] Outline restaurado');
     }
   };
 
   handleClick = (e) => {
-    console.log('🖱️ [Picker] Click detectado!', e.target);
-    
     if (!this.isActive) {
-      console.warn('⚠️ [Picker] Picker não está ativo, ignorando click');
       return;
     }
 
     e.preventDefault();
     e.stopPropagation();
-    console.log('✅ [Picker] Click interceptado (preventDefault + stopPropagation)');
 
     const target = e.target;
-    console.log('🎯 [Picker] Elemento clicado:', {
-      tag: target.tagName,
-      id: target.id,
-      class: target.className,
-      text: target.textContent?.substring(0, 50)
-    });
 
     // Ignore our own elements
     if (target.id === 'despertador-ponto-overlay' || 
         target.id === 'despertador-ponto-tooltip') {
-      console.log('⚠️ [Picker] Click foi no overlay/tooltip, ignorando');
       return;
     }
 
-    console.log('✅ [Picker] Elemento válido selecionado!');
-
     // Generate selector
-    console.log('🔧 [Picker] Gerando selector...');
     const selector = this.generateSelector(target);
-    console.log('📝 [Picker] Selector gerado:', selector);
 
     if (selector) {
       // Verify selector works
-      console.log('🔍 [Picker] Verificando se selector funciona...');
       const testElement = document.querySelector(selector);
       
       if (testElement === target) {
-        console.log('✅ [Picker] Selector válido! Salvando...');
         this.saveSelector(selector);
       } else {
         console.error('❌ [Picker] Selector inválido - elemento encontrado é diferente');
-        console.log('Elemento esperado:', target);
-        console.log('Elemento encontrado:', testElement);
         this.showError('Erro ao gerar seletor. Tente outro elemento.');
       }
     } else {
@@ -594,7 +530,6 @@ class ElementPicker {
       this.showError('Erro ao gerar seletor');
     }
 
-    console.log('🛑 [Picker] Parando picker...');
     this.stop();
   };
 
@@ -603,7 +538,6 @@ class ElementPicker {
 
     if (e.key === 'Escape') {
       e.preventDefault();
-      console.log('❌ [Despertador Ponto] Picker cancelado');
       this.stop();
     }
   };
