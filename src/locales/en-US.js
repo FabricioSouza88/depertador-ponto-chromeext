@@ -32,7 +32,7 @@ export const enUS = {
       remaining: 'Time Remaining',
       noEntries: 'No entries recorded',
       timeToLeave: 'Time to leave! 🎉',
-      calculate: 'Calculate from Now'
+      calculate: 'Refresh'
     },
 
     // Settings Section
@@ -42,6 +42,8 @@ export const enUS = {
       workHoursUnit: 'hours',
       breakMinutes: 'Break (min)',
       breakMinutesUnit: 'minutes',
+      usualEntryTime: 'Usual Entry Time',
+      usualEntryTimeTooltip: 'Set your usual clock-in time. The extension will remind you if you forget.',
       save: 'Save Settings',
       clearToday: "Clear Today's Records"
     },
@@ -78,7 +80,11 @@ export const enUS = {
       buttonConfigured: 'Button configured!',
       configRemoved: 'Configuration removed',
       selectTime: 'Please select a time',
-      languageChanged: 'Language changed successfully!'
+      languageChanged: 'Language changed successfully!',
+      entryReminder: {
+        title: 'Time to clock in! ⏰',
+        message: 'You haven\'t clocked in yet today. Don\'t forget to punch in!'
+      }
     }
   },
 

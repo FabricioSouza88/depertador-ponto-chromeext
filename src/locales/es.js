@@ -32,7 +32,7 @@ export const es = {
       remaining: 'Tiempo Restante',
       noEntries: 'No hay entradas registradas',
       timeToLeave: '¡Hora de salir! 🎉',
-      calculate: 'Calcular desde Ahora'
+      calculate: 'Actualizar'
     },
 
     // Sección de Configuración
@@ -42,6 +42,8 @@ export const es = {
       workHoursUnit: 'horas',
       breakMinutes: 'Descanso (min)',
       breakMinutesUnit: 'minutos',
+      usualEntryTime: 'Hora de Entrada Habitual',
+      usualEntryTimeTooltip: 'Defina su hora habitual de entrada. La extensión le recordará si lo olvida.',
       save: 'Guardar Configuración',
       clearToday: 'Limpiar Registros de Hoy'
     },
@@ -78,7 +80,11 @@ export const es = {
       buttonConfigured: '¡Botón configurado!',
       configRemoved: 'Configuración eliminada',
       selectTime: 'Por favor, seleccione una hora',
-      languageChanged: '¡Idioma cambiado con éxito!'
+      languageChanged: '¡Idioma cambiado con éxito!',
+      entryReminder: {
+        title: '¡Hora de fichar! ⏰',
+        message: 'Aún no ha registrado su entrada de hoy. ¡No olvide fichar!'
+      }
     }
   },
 

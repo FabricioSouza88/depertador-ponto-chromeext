@@ -5,6 +5,42 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [2.2.0] - 2026-01-26
+
+### 🆕 Nova Funcionalidade: Lembrete de Entrada Habitual
+
+- **Campo de configuração**: "Horário de Entrada Habitual" (padrão: 08:00)
+- **Lembrete automático**: Notifica o usuário 5 minutos após o horário configurado se ele ainda não bateu o ponto
+- **Verificação inteligente**: Só envia lembrete se não houver entradas registradas no dia
+- **Uma vez por dia**: Lembrete enviado apenas uma vez por dia
+- **Multilíngue**: Notificação traduzida em PT-BR, EN-US e ES
+- **Tooltip explicativo**: Ícone de ajuda (?) explicando para que serve o campo
+
+### 🔧 Melhorias Técnicas
+
+- Verificação periódica a cada minuto (via alarm `periodic-check`)
+- Nova função `AlarmManager.checkAndRemindEntry()` no background
+- Nova função `AlarmManager.showEntryReminder()` com suporte a traduções
+- Mensagem `settings-updated` do popup para o background
+- Flag de lembrete enviado salva localmente por dia
+- Reset automático à meia-noite
+
+### 📝 Documentação
+
+- Novo guia completo em `docs/ENTRY_REMINDER.md`
+- Fluxo de execução detalhado
+- Casos de uso e exemplos
+- Instruções de teste e debug
+- Troubleshooting
+
+### 🌍 Traduções
+
+Adicionadas em todos os idiomas:
+- `settings.usualEntryTime`
+- `settings.usualEntryTimeTooltip`
+- `notifications.entryReminder.title`
+- `notifications.entryReminder.message`
+
 ## [2.1.1] - 2025-01-26
 
 ### 🆕 Adicionado

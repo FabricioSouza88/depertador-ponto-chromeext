@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Despertador Ponto",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "Extensão para controlar e lembrar horários de batida de ponto online - Multilíngue: PT/EN/ES",
   "permissions": [
     "storage",

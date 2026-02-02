@@ -7,7 +7,9 @@
 const CONFIG = {
   alarmName: 'despertador-ponto',
   checkInterval: 1, // minutos
-  notificationId: 'despertador-ponto-notification'
+  notificationId: 'despertador-ponto-notification',
+  entryReminderAlarm: 'entry-reminder-check',
+  entryReminderDelay: 5 // minutos após a hora habitual
 };
 
 // ==================== Storage Helper ====================
@@ -186,6 +188,90 @@ class AlarmManager {
     // Mas podemos criar uma notificação que o sistema toca
     console.log('🔊 [Background] Notificação sonora do sistema');
   }
+
+  static async checkAndRemindEntry() {
+    console.log('🔍 [Background] Verificando necessidade de lembrete de entrada');
+    
+    // Obter configurações
+    const settings = await StorageHelper.get('settings');
+    if (!settings || !settings.usualEntryTime) {
+      console.log('⏭️ [Background] Sem horário de entrada habitual configurado');
+      return;
+    }
+
+    // Verificar se já tem entrada hoje
+    const todayKey = StorageHelper.getTodayKey();
+    const entries = await StorageHelper.get(todayKey);
+    if (entries && entries.length > 0) {
+      console.log('✅ [Background] Já tem entrada registrada hoje');
+      return;
+    }
+
+    // Verificar se já passou 5 minutos do horário habitual
+    const now = new Date();
+    const [hours, minutes] = settings.usualEntryTime.split(':');
+    const usualTime = new Date();
+    usualTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+    
+    const timeDiff = now - usualTime;
+    const minutesDiff = timeDiff / (1000 * 60);
+
+    console.log(`⏰ [Background] Horário habitual: ${settings.usualEntryTime}, Diferença: ${minutesDiff.toFixed(0)} minutos`);
+
+    // Se passaram mais de 5 minutos do horário habitual
+    if (minutesDiff >= CONFIG.entryReminderDelay) {
+      // Verificar se já enviou lembrete hoje
+      const reminderSentKey = `entry-reminder-sent-${todayKey}`;
+      const reminderSent = await StorageHelper.get(reminderSentKey);
+      
+      if (!reminderSent) {
+        console.log('🔔 [Background] Enviando lembrete de entrada');
+        await this.showEntryReminder();
+        await StorageHelper.set(reminderSentKey, true);
+      } else {
+        console.log('⏭️ [Background] Lembrete já foi enviado hoje');
+      }
+    } else {
+      console.log('⏭️ [Background] Ainda não passou 5 minutos do horário habitual');
+    }
+  }
+
+  static async showEntryReminder() {
+    // Obter idioma atual para notificação traduzida
+    const selectedLanguage = await StorageHelper.get('selectedLanguage') || 'pt-BR';
+    
+    // Traduções simples (já que não temos acesso ao i18n aqui)
+    const translations = {
+      'pt-BR': {
+        title: 'Hora de bater o ponto! ⏰',
+        message: 'Você ainda não registrou sua entrada de hoje. Não esqueça de bater o ponto!'
+      },
+      'en-US': {
+        title: 'Time to clock in! ⏰',
+        message: 'You haven\'t clocked in yet today. Don\'t forget to punch in!'
+      },
+      'es': {
+        title: '¡Hora de fichar! ⏰',
+        message: 'Aún no ha registrado su entrada de hoy. ¡No olvide fichar!'
+      }
+    };
+
+    const text = translations[selectedLanguage] || translations['pt-BR'];
+
+    const options = {
+      type: 'basic',
+      iconUrl: 'icons/icon128.png',
+      title: text.title,
+      message: text.message,
+      priority: 2,
+      requireInteraction: true,
+      silent: false
+    };
+
+    const notificationId = 'entry-reminder-' + Date.now();
+    chrome.notifications.create(notificationId, options);
+    console.log('✅ [Background] Lembrete de entrada enviado');
+  }
 }
 
 // ==================== Event Listeners ====================
@@ -198,7 +284,8 @@ chrome.runtime.onInstalled.addListener((details) => {
     // Configurações padrão
     StorageHelper.set('settings', {
       workHours: 8,
-      breakMinutes: 60
+      breakMinutes: 60,
+      usualEntryTime: '08:00'
     });
   }
 });
@@ -216,6 +303,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
     // Verificação periódica
     console.log('🔍 [Background] Executando verificação periódica');
     await checkUpcomingExit();
+    await AlarmManager.checkAndRemindEntry();
   } else if (alarm.name === 'reminder-5min') {
     // Lembrete adiado
     await AlarmManager.showExitNotification();
@@ -314,6 +402,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   if (request.action === 'clearAlarm') {
     AlarmManager.clearAlarm().then(() => {
+      sendResponse({ success: true });
+    });
+    return true;
+  }
+
+  if (request.type === 'settings-updated') {
+    // Configurações foram atualizadas, limpar flag de lembrete para permitir novo lembrete
+    const todayKey = StorageHelper.getTodayKey();
+    const reminderSentKey = `entry-reminder-sent-${todayKey}`;
+    StorageHelper.set(reminderSentKey, false).then(() => {
+      console.log('✅ [Background] Flag de lembrete de entrada resetada');
       sendResponse({ success: true });
     });
     return true;

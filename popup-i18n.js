@@ -53,7 +53,7 @@ class StorageManager {
 
   static async getSettings() {
     const settings = await this.get('settings');
-    return settings || { workHours: 8, breakMinutes: 60 };
+    return settings || { workHours: 8, breakMinutes: 60, usualEntryTime: '08:00' };
   }
 
   static async saveSettings(settings) {
@@ -144,6 +144,7 @@ class UIManager {
       calculateExit: document.getElementById('calculate-exit'),
       workHours: document.getElementById('work-hours'),
       breakMinutes: document.getElementById('break-minutes'),
+      usualEntryTime: document.getElementById('usual-entry-time'),
       saveSettings: document.getElementById('save-settings'),
       clearToday: document.getElementById('clear-today'),
       selectorStatus: document.getElementById('selector-status'),
@@ -230,15 +231,24 @@ class UIManager {
     const settings = await StorageManager.getSettings();
     this.elements.workHours.value = settings.workHours;
     this.elements.breakMinutes.value = settings.breakMinutes;
+    this.elements.usualEntryTime.value = settings.usualEntryTime || '08:00';
   }
 
   async saveSettings() {
     const settings = {
       workHours: parseFloat(this.elements.workHours.value),
-      breakMinutes: parseInt(this.elements.breakMinutes.value)
+      breakMinutes: parseInt(this.elements.breakMinutes.value),
+      usualEntryTime: this.elements.usualEntryTime.value
     };
 
     await StorageManager.saveSettings(settings);
+    
+    // Notificar background para atualizar alarme de entrada
+    chrome.runtime.sendMessage({
+      type: 'settings-updated',
+      settings: settings
+    });
+    
     this.showNotification(i18n.t('popup.notifications.settingsSaved'), 'success');
     this.refreshUI();
 

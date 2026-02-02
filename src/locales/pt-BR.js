@@ -33,7 +33,7 @@ export const ptBR = {
       remaining: 'Tempo Restante',
       noEntries: 'Nenhuma entrada registrada',
       timeToLeave: 'Hora de sair! 🎉',
-      calculate: 'Calcular do Agora'
+      calculate: 'Atualizar'
     },
 
     // Seção de Configurações
@@ -43,6 +43,8 @@ export const ptBR = {
       workHoursUnit: 'horas',
       breakMinutes: 'Intervalo (min)',
       breakMinutesUnit: 'minutos',
+      usualEntryTime: 'Horário de Entrada Habitual',
+      usualEntryTimeTooltip: 'Defina seu horário habitual de entrada. A extensão lembrará você de bater o ponto se esquecer.',
       save: 'Salvar Configurações',
       clearToday: 'Limpar Registros de Hoje'
     },
@@ -79,7 +81,11 @@ export const ptBR = {
       buttonConfigured: 'Botão configurado!',
       configRemoved: 'Configuração removida',
       selectTime: 'Por favor, selecione um horário',
-      languageChanged: 'Idioma alterado com sucesso!'
+      languageChanged: 'Idioma alterado com sucesso!',
+      entryReminder: {
+        title: 'Hora de bater o ponto! ⏰',
+        message: 'Você ainda não registrou sua entrada de hoje. Não esqueça de bater o ponto!'
+      }
     }
   },
 
