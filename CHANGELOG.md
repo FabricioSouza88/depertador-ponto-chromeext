@@ -7,55 +7,46 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [2.3.4] - 2026-01-26
 
-### 🧹 Melhoria: Console Limpo e Performance Otimizada
+### ⚡ Melhoria: Performance Otimizada
 
-- **Problema resolvido**: Console poluído com muitos logs do MutationObserver
-- **Solução**: Removidos todos os logs desnecessários, mantidos apenas erros críticos
-- **Debounce aumentado**: De 100ms para 3 segundos para reduzir execuções
+- **Mudança**: Debounce do MutationObserver aumentado de 100ms para 3 segundos
+- **Benefício**: Redução significativa de execuções e uso de CPU
+- **Trade-off**: Indicador visual pode levar até 3 segundos para reaparecer após modal reabrir
 
 ### 🔧 Mudanças Técnicas
 
-**1. Logs Removidos**:
-- ✅ Logs de inicialização do detector
-- ✅ Logs de botão encontrado
-- ✅ Logs de listener anexado
-- ✅ Logs de entrada salva
-- ✅ Logs do ElementPicker (start, overlay, eventos)
-- ✅ Logs de indicador visual adicionado
-- ✅ Logs de cleanup
-- ⚠️ **Mantidos**: Apenas console.error para erros críticos
-
-**2. Performance**:
+**Performance**:
 - Debounce do MutationObserver: 100ms → 3000ms (3 segundos)
 - Redução drástica de execuções do findAndAttachListener
 - Verificação continua funcionando, mas menos frequente
+- **Logs mantidos** para debug (pode gerar muitas mensagens no console)
 
 ### 📊 Impacto
 
 **Antes**:
 ```
-Console poluído com 10+ logs por segundo
 MutationObserver verificando a cada 100ms
+Alta frequência de execuções
 ```
 
 **Agora**:
 ```
-Console limpo (silencioso)
 MutationObserver verificando a cada 3 segundos
-Apenas erros críticos aparecem
+Menor uso de CPU/recursos
+Mesma funcionalidade
 ```
 
 ### 🎯 Benefícios
 
-- ✅ Console limpo para desenvolvimento
 - ✅ Menor uso de CPU/recursos
 - ✅ Mesma funcionalidade (indicador persiste)
 - ✅ Detecção ainda funciona (com 3s de delay máximo)
+- ℹ️ Logs de debug mantidos (console pode ter mensagens)
 
 ### ⚠️ Trade-off
 
 - Indicador pode levar até 3 segundos para reaparecer após modal reabrir
-- Aceitável considerando a melhoria de performance e limpeza do console
+- Console ainda terá logs de debug (mas menos frequentes)
 
 ## [2.3.3] - 2026-01-26
 

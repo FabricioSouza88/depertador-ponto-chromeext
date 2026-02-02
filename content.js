@@ -1,6 +1,6 @@
-﻿/**
- * Content Script - Detecta cliques no botÃ£o de ponto configurado
- * Funciona em qualquer pÃ¡gina onde o usuÃ¡rio tenha selecionado um botÃ£o
+/**
+ * Content Script - Detecta cliques no botão de ponto configurado
+ * Funciona em qualquer página onde o usuário tenha selecionado um botão
  */
 
 // ==================== Configuration ====================
@@ -19,9 +19,11 @@ class ClickDetector {
   }
 
   async init() {
-    // Verifica se contexto Ã© vÃ¡lido antes de iniciar
+    console.log('🚀 [Despertador Ponto] Content script inicializado');
+    
+    // Verifica se contexto é válido antes de iniciar
     if (!chrome.runtime?.id) {
-      console.error('âŒ [Despertador Ponto] Contexto invÃ¡lido ao iniciar. Abortando.');
+      console.error('❌ [Despertador Ponto] Contexto inválido ao iniciar. Abortando.');
       this.contextInvalidated = true;
       return;
     }
@@ -31,18 +33,18 @@ class ClickDetector {
   }
 
   /**
-   * Observa mudanÃ§as no DOM para detectar quando o botÃ£o aparecer
+   * Observa mudanças no DOM para detectar quando o botão aparecer
    */
   observeDOM() {
     this.observer = new MutationObserver(async (mutations) => {
       // Para se contexto foi invalidado
       if (this.contextInvalidated) {
-    
+        console.warn('⚠️ [Despertador Ponto] Contexto invalidado, parando observer');
         this.cleanup();
         return;
       }
       
-      // Debounce para evitar execuÃ§Ãµes excessivas
+      // Debounce para evitar execuções excessivas
       clearTimeout(this.mutationDebounceTimer);
       this.mutationDebounceTimer = setTimeout(async () => {
         await this.findAndAttachListener();
@@ -56,20 +58,21 @@ class ClickDetector {
   }
 
   /**
-   * Procura o botÃ£o de ponto e adiciona listener
+   * Procura o botão de ponto e adiciona listener
    */
   async findAndAttachListener() {
     const button = await this.findButton();
     
     if (button) {
-      // Verifica se jÃ¡ tem listener anexado
+      // Verifica se já tem listener anexado
       if (!button.dataset.despertadorAttached) {
+        console.log('✅ [Despertador Ponto] Botão de ponto encontrado!', button);
         this.attachClickListener(button);
         this.buttonFound = true;
         button.dataset.despertadorAttached = 'true';
       }
       
-      // Sempre verifica e readiciona indicador se necessÃ¡rio
+      // Sempre verifica e readiciona indicador se necessário
       if (!button.querySelector('.despertador-indicator')) {
         this.addVisualIndicator(button);
       }
@@ -77,34 +80,47 @@ class ClickDetector {
   }
 
   /**
-   * Tenta encontrar o botÃ£o usando selector configurado
+   * Tenta encontrar o botão usando selector configurado
    */
   async findButton() {
     const config = await this.getButtonConfig();
     
     if (!config || !config.selector) {
+      console.log('ℹ️ [Despertador Ponto] Nenhum botão configurado');
       return null;
     }
 
-    // Verifica se estÃ¡ na pÃ¡gina correta
+    // Verifica se está na página correta
     const currentUrl = window.location.href;
     if (!this.isMatchingUrl(currentUrl, config.pageUrl)) {
+      console.log('ℹ️ [Despertador Ponto] Página atual não corresponde à configuração', {
+        current: currentUrl,
+        configured: config.pageUrl
+      });
       return null;
     }
+
+    console.log('🔍 [Despertador Ponto] Procurando botão configurado:', config.selector);
     
     try {
       const button = document.querySelector(config.selector);
-      return button || null;
+      if (button) {
+        console.log('✅ [Despertador Ponto] Botão encontrado!');
+        return button;
+      } else {
+        console.warn('⚠️ [Despertador Ponto] Selector não encontrou elemento na página');
+      }
     } catch (error) {
-      console.error('âŒ [Despertador Ponto] Erro ao usar selector:', error);
-      return null;
+      console.error('❌ [Despertador Ponto] Erro ao usar selector:', error);
     }
+
+    return null;
   }
 
   async getButtonConfig() {
     // Check if extension context is still valid
     if (!chrome.runtime?.id) {
-  
+      console.warn('⚠️ [Despertador Ponto] Contexto da extensão invalidado. Recarregue a página.');
       this.contextInvalidated = true; // Marca como invalidado
       this.cleanup(); // Para o observer
       return null;
@@ -114,9 +130,9 @@ class ClickDetector {
       try {
         chrome.storage.local.get(['buttonConfig'], (result) => {
           if (chrome.runtime.lastError) {
-            console.error('âŒ [Despertador Ponto] Erro ao acessar storage:', chrome.runtime.lastError);
+            console.error('❌ [Despertador Ponto] Erro ao acessar storage:', chrome.runtime.lastError);
             
-            // Se erro Ã© de contexto invalidado, marca flag
+            // Se erro é de contexto invalidado, marca flag
             if (chrome.runtime.lastError.message?.includes('Extension context invalidated')) {
               this.contextInvalidated = true;
               this.cleanup();
@@ -128,9 +144,9 @@ class ClickDetector {
           resolve(result.buttonConfig || null);
         });
       } catch (error) {
-        console.error('âŒ [Despertador Ponto] ExceÃ§Ã£o ao acessar storage:', error);
+        console.error('❌ [Despertador Ponto] Exceção ao acessar storage:', error);
         
-        // Se erro Ã© de contexto invalidado, marca flag
+        // Se erro é de contexto invalidado, marca flag
         if (error.message?.includes('Extension context invalidated')) {
           this.contextInvalidated = true;
           this.cleanup();
@@ -142,41 +158,43 @@ class ClickDetector {
   }
 
   /**
-   * Verifica se a URL atual corresponde Ã  URL configurada
-   * Compara origin (protocolo + domÃ­nio + porta) e pathname
+   * Verifica se a URL atual corresponde à URL configurada
+   * Compara origin (protocolo + domínio + porta) e pathname
    */
   isMatchingUrl(currentUrl, configuredUrl) {
     try {
       const current = new URL(currentUrl);
       const configured = new URL(configuredUrl);
       
-      // Compara origin (protocolo + domÃ­nio + porta)
+      // Compara origin (protocolo + domínio + porta)
       if (current.origin !== configured.origin) {
         return false;
       }
       
       // Compara pathname (caminho da URL)
-      // Aceita se o pathname atual comeÃ§a com o configurado
+      // Aceita se o pathname atual começa com o configurado
       return current.pathname === configured.pathname || 
              current.pathname.startsWith(configured.pathname);
     } catch (error) {
-      console.error('âŒ [Despertador Ponto] Erro ao comparar URLs:', error);
+      console.error('❌ [Despertador Ponto] Erro ao comparar URLs:', error);
       return false;
     }
   }
 
   /**
-   * Adiciona listener de click ao botÃ£o
+   * Adiciona listener de click ao botão
    */
   attachClickListener(button) {
-    // Listener no prÃ³prio botÃ£o
+    // Listener no próprio botão
     button.addEventListener('click', (e) => this.handleClick(e), true);
     
-    // Listener no parent container tambÃ©m (caso o click seja no span interno)
+    // Listener no parent container também (caso o click seja no span interno)
     const buttonLabel = button.querySelector('.MuiButton-label');
     if (buttonLabel) {
       buttonLabel.addEventListener('click', (e) => this.handleClick(e), true);
     }
+
+    console.log('🎯 [Despertador Ponto] Listener anexado ao botão');
   }
 
   /**
@@ -187,10 +205,13 @@ class ClickDetector {
     
     // Debounce - evita clicks duplicados
     if (now - this.lastClickTime < CONFIG.debounceTime) {
+      console.log('⏱️ [Despertador Ponto] Click ignorado (debounce)');
       return;
     }
 
     this.lastClickTime = now;
+    
+    console.log('✨ [Despertador Ponto] Ponto registrado!', new Date(now));
     
     // Registra o ponto
     this.registerEntry(now);
@@ -218,18 +239,23 @@ class ClickDetector {
 
         // Salva
         chrome.storage.local.set({ [today]: entries }, () => {
+          console.log('💾 [Despertador Ponto] Entrada salva:', {
+            total: entries.length,
+            timestamp: new Date(timestamp).toLocaleTimeString('pt-BR')
+          });
+
           // Notifica o background para atualizar alarme
           chrome.runtime.sendMessage({ 
             action: 'updateAlarm',
             timestamp: timestamp 
           });
 
-          // Mostra notificaÃ§Ã£o
+          // Mostra notificação
           this.showNotification(entries.length);
         });
       });
     } catch (error) {
-      console.error('âŒ [Despertador Ponto] Erro ao registrar entrada:', error);
+      console.error('❌ [Despertador Ponto] Erro ao registrar entrada:', error);
     }
   }
 
@@ -242,11 +268,11 @@ class ClickDetector {
   }
 
   /**
-   * Mostra feedback visual ao usuÃ¡rio
+   * Mostra feedback visual ao usuário
    */
   showFeedback() {
     const feedback = document.createElement('div');
-    feedback.innerHTML = 'â° Ponto registrado pelo Despertador Ponto!';
+    feedback.innerHTML = '⏰ Ponto registrado pelo Despertador Ponto!';
     feedback.style.cssText = `
       position: fixed;
       top: 20px;
@@ -288,28 +314,28 @@ class ClickDetector {
   }
 
   /**
-   * Mostra notificaÃ§Ã£o do Chrome
+   * Mostra notificação do Chrome
    */
   showNotification(entryCount) {
     chrome.runtime.sendMessage({
       action: 'showNotification',
-      title: 'Ponto Registrado! â°',
+      title: 'Ponto Registrado! ⏰',
       message: `Entrada ${entryCount} registrada em ${new Date().toLocaleTimeString('pt-BR')}`
     });
   }
 
   /**
-   * Adiciona indicador visual no botÃ£o
+   * Adiciona indicador visual no botão
    */
   addVisualIndicator(button) {
-    // Verifica se jÃ¡ existe indicador
+    // Verifica se já existe indicador
     if (button.querySelector('.despertador-indicator')) {
       return;
     }
 
     const indicator = document.createElement('div');
     indicator.className = 'despertador-indicator'; // Classe para identificar
-    indicator.innerHTML = 'â°';
+    indicator.innerHTML = '⏰';
     indicator.title = 'Monitorado pelo Despertador Ponto';
     indicator.style.cssText = `
       position: absolute;
@@ -328,20 +354,24 @@ class ClickDetector {
       pointer-events: none;
     `;
 
-    // Torna o botÃ£o relativo para posicionar o indicador
+    // Torna o botão relativo para posicionar o indicador
     if (window.getComputedStyle(button).position === 'static') {
       button.style.position = 'relative';
     }
     button.appendChild(indicator);
+    
+    console.log('🎨 [Despertador Ponto] Indicador visual adicionado');
   }
 
   /**
    * Limpa observers
    */
   cleanup() {
+    console.log('🧹 [Despertador Ponto] Limpando detector...');
     if (this.observer) {
       this.observer.disconnect();
       this.observer = null;
+      console.log('✅ [Despertador Ponto] Observer desconectado');
     }
     if (this.mutationDebounceTimer) {
       clearTimeout(this.mutationDebounceTimer);
@@ -361,26 +391,38 @@ class ElementPicker {
   }
 
   start() {
+    console.log('🚀 [Picker] start() chamado');
+    
     if (this.isActive) {
+      console.warn('⚠️ [Picker] Picker já está ativo, ignorando');
       return;
     }
 
     this.isActive = true;
+    console.log('✅ [Picker] isActive = true');
+
+    // Create overlay
+    console.log('🎨 [Picker] Criando overlay...');
     this.createOverlay();
 
+    // Add event listeners
+    console.log('🎧 [Picker] Adicionando event listeners...');
     document.addEventListener('mouseover', this.handleMouseOver, true);
     document.addEventListener('mouseout', this.handleMouseOut, true);
     document.addEventListener('click', this.handleClick, true);
     document.addEventListener('keydown', this.handleKeyDown, true);
+    console.log('✅ [Picker] Event listeners adicionados');
 
     // Prevent scrolling while picker is active
     document.body.style.overflow = 'hidden';
+    console.log('🎯 [Picker] Picker PRONTO! Mova o mouse sobre os elementos e CLIQUE no botão desejado');
   }
 
   stop() {
     if (!this.isActive) return;
 
     this.isActive = false;
+    console.log('🛑 [Despertador Ponto] Picker parado');
 
     // Remove event listeners
     document.removeEventListener('mouseover', this.handleMouseOver, true);
@@ -410,7 +452,7 @@ class ElementPicker {
   }
 
   createOverlay() {
-    console.log('ðŸŽ¨ [Picker] createOverlay() iniciado');
+    console.log('🎨 [Picker] createOverlay() iniciado');
     
     this.overlay = document.createElement('div');
     this.overlay.id = 'despertador-ponto-overlay';
@@ -425,7 +467,7 @@ class ElementPicker {
       cursor: crosshair;
       pointer-events: none;
     `;
-    console.log('âœ… [Picker] Overlay criado (pointer-events: none)');
+    console.log('✅ [Picker] Overlay criado (pointer-events: none)');
 
     this.tooltip = document.createElement('div');
     this.tooltip.id = 'despertador-ponto-tooltip';
@@ -444,21 +486,21 @@ class ElementPicker {
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
       pointer-events: none;
     `;
-    this.tooltip.textContent = 'ðŸ–±ï¸ CLIQUE no botÃ£o que deseja monitorar â€¢ ESC para cancelar';
+    this.tooltip.textContent = '🖱️ CLIQUE no botão que deseja monitorar • ESC para cancelar';
+    console.log('✅ [Picker] Tooltip criado');
 
-
-
+    console.log('📍 [Picker] Adicionando overlay e tooltip ao body...');
     document.body.appendChild(this.overlay);
     document.body.appendChild(this.tooltip);
-
-    console.log('ðŸ“Š [Picker] Overlay no DOM?', document.getElementById('despertador-ponto-overlay') !== null);
-    console.log('ðŸ“Š [Picker] Tooltip no DOM?', document.getElementById('despertador-ponto-tooltip') !== null);
-
+    console.log('✅ [Picker] Overlay e tooltip adicionados ao DOM');
+    console.log('📊 [Picker] Overlay no DOM?', document.getElementById('despertador-ponto-overlay') !== null);
+    console.log('📊 [Picker] Tooltip no DOM?', document.getElementById('despertador-ponto-tooltip') !== null);
+    console.log('🎯 [Picker] AGORA você pode clicar nos elementos da página!');
   }
 
   handleMouseOver = (e) => {
     if (!this.isActive) {
-  
+      console.log('⚠️ [Picker] handleMouseOver ignorado - picker não está ativo');
       return;
     }
     
@@ -467,11 +509,11 @@ class ElementPicker {
     // Ignore our own elements
     if (target.id === 'despertador-ponto-overlay' || 
         target.id === 'despertador-ponto-tooltip') {
-  
+      console.log('⚠️ [Picker] Mouse sobre overlay/tooltip - ignorando');
       return;
     }
 
-
+    console.log('🖱️ [Picker] Mouse sobre elemento:', target.tagName, target.className);
 
     this.hoveredElement = target;
 
@@ -483,6 +525,7 @@ class ElementPicker {
     // Highlight element
     target.style.outline = '3px solid #667eea';
     target.style.outlineOffset = '2px';
+    console.log('✨ [Picker] Elemento destacado com borda azul');
   };
 
   handleMouseOut = (e) => {
@@ -494,24 +537,24 @@ class ElementPicker {
     if (this.originalOutline.has(target)) {
       const originalOutline = this.originalOutline.get(target);
       target.style.outline = originalOutline;
-  
+      console.log('🔄 [Picker] Outline restaurado');
     }
   };
 
   handleClick = (e) => {
-
+    console.log('🖱️ [Picker] Click detectado!', e.target);
     
     if (!this.isActive) {
-  
+      console.warn('⚠️ [Picker] Picker não está ativo, ignorando click');
       return;
     }
 
     e.preventDefault();
     e.stopPropagation();
-    console.log('âœ… [Picker] Click interceptado (preventDefault + stopPropagation)');
+    console.log('✅ [Picker] Click interceptado (preventDefault + stopPropagation)');
 
     const target = e.target;
-    console.log('ðŸŽ¯ [Picker] Elemento clicado:', {
+    console.log('🎯 [Picker] Elemento clicado:', {
       tag: target.tagName,
       id: target.id,
       class: target.className,
@@ -521,37 +564,37 @@ class ElementPicker {
     // Ignore our own elements
     if (target.id === 'despertador-ponto-overlay' || 
         target.id === 'despertador-ponto-tooltip') {
-  
+      console.log('⚠️ [Picker] Click foi no overlay/tooltip, ignorando');
       return;
     }
 
-
+    console.log('✅ [Picker] Elemento válido selecionado!');
 
     // Generate selector
-
+    console.log('🔧 [Picker] Gerando selector...');
     const selector = this.generateSelector(target);
-
+    console.log('📝 [Picker] Selector gerado:', selector);
 
     if (selector) {
       // Verify selector works
-  
+      console.log('🔍 [Picker] Verificando se selector funciona...');
       const testElement = document.querySelector(selector);
       
       if (testElement === target) {
-    
+        console.log('✅ [Picker] Selector válido! Salvando...');
         this.saveSelector(selector);
       } else {
-        console.error('âŒ [Picker] Selector invÃ¡lido - elemento encontrado Ã© diferente');
-    
-    
+        console.error('❌ [Picker] Selector inválido - elemento encontrado é diferente');
+        console.log('Elemento esperado:', target);
+        console.log('Elemento encontrado:', testElement);
         this.showError('Erro ao gerar seletor. Tente outro elemento.');
       }
     } else {
-      console.error('âŒ [Picker] Falha ao gerar selector');
+      console.error('❌ [Picker] Falha ao gerar selector');
       this.showError('Erro ao gerar seletor');
     }
 
-
+    console.log('🛑 [Picker] Parando picker...');
     this.stop();
   };
 
@@ -560,18 +603,18 @@ class ElementPicker {
 
     if (e.key === 'Escape') {
       e.preventDefault();
-  
+      console.log('❌ [Despertador Ponto] Picker cancelado');
       this.stop();
     }
   };
 
   /**
-   * Verifica se uma classe CSS Ã© estÃ¡vel (nÃ£o dinÃ¢mica)
+   * Verifica se uma classe CSS é estável (não dinâmica)
    */
   isStableClass(className) {
     if (!className) return false;
     
-    // Classes dinÃ¢micas que devem ser evitadas
+    // Classes dinâmicas que devem ser evitadas
     const dynamicPatterns = [
       /^jss\d+$/,                    // Material-UI: jss154, jss137
       /^css-[a-z0-9]+$/i,            // CSS-in-JS: css-abc123
@@ -582,12 +625,12 @@ class ElementPicker {
       /^\w+-\d+-\d+-\d+$/           // Tailwind JIT: mt-4-5-6
     ];
     
-    // Verifica se a classe corresponde a algum padrÃ£o dinÃ¢mico
+    // Verifica se a classe corresponde a algum padrão dinâmico
     return !dynamicPatterns.some(pattern => pattern.test(className));
   }
 
   /**
-   * Extrai classes estÃ¡veis de um elemento
+   * Extrai classes estáveis de um elemento
    */
   getStableClasses(element) {
     if (!element.className || typeof element.className !== 'string') {
@@ -597,7 +640,7 @@ class ElementPicker {
     return element.className.trim().split(/\s+/)
       .filter(c => this.isStableClass(c))
       .filter(c => !c.startsWith('hover') && !c.startsWith('active'))
-      .slice(0, 3); // MÃ¡ximo 3 classes para performance
+      .slice(0, 3); // Máximo 3 classes para performance
   }
 
   generateSelector(element) {
@@ -633,7 +676,7 @@ class ElementPicker {
         
         if (matchingButtons.length === 1) {
           // Generate selector with text validation
-      
+          console.log(`📝 [Despertador Ponto] Usando texto do botão como referência: "${text}"`);
           // Still return structural selector but log the text for reference
         }
       }
@@ -712,8 +755,8 @@ class ElementPicker {
   async saveSelector(selector) {
     // Check if extension context is still valid
     if (!chrome.runtime?.id) {
-      console.error('âŒ [Despertador Ponto] Contexto da extensÃ£o invalidado');
-      this.showError('ExtensÃ£o foi recarregada. Por favor, recarregue esta pÃ¡gina (F5) e tente novamente.');
+      console.error('❌ [Despertador Ponto] Contexto da extensão invalidado');
+      this.showError('Extensão foi recarregada. Por favor, recarregue esta página (F5) e tente novamente.');
       return;
     }
 
@@ -731,9 +774,9 @@ class ElementPicker {
         throw new Error(chrome.runtime.lastError.message);
       }
       
-  
+      console.log('💾 [Despertador Ponto] Configuração salva:', buttonConfig);
       
-      this.showSuccess(`BotÃ£o configurado!\nPÃ¡gina: ${buttonConfig.pageTitle}\nSelector: ${selector}`);
+      this.showSuccess(`Botão configurado!\nPágina: ${buttonConfig.pageTitle}\nSelector: ${selector}`);
       
       // Notify that selector was saved - reinit detector
       if (detector) {
@@ -741,12 +784,12 @@ class ElementPicker {
         await detector.findAndAttachListener();
       }
     } catch (error) {
-      console.error('âŒ [Despertador Ponto] Erro ao salvar configuraÃ§Ã£o:', error);
+      console.error('❌ [Despertador Ponto] Erro ao salvar configuração:', error);
       
       if (error.message?.includes('Extension context invalidated')) {
-        this.showError('ExtensÃ£o foi recarregada. Recarregue a pÃ¡gina (F5) e tente novamente.');
+        this.showError('Extensão foi recarregada. Recarregue a página (F5) e tente novamente.');
       } else {
-        this.showError('Erro ao salvar configuraÃ§Ã£o: ' + error.message);
+        this.showError('Erro ao salvar configuração: ' + error.message);
       }
     }
   }
@@ -807,10 +850,10 @@ if (document.readyState === 'loading') {
 }
 
 function initDetector() {
-  // Verifica se contexto Ã© vÃ¡lido antes de inicializar
+  // Verifica se contexto é válido antes de inicializar
   if (!chrome.runtime?.id) {
-    console.error('âŒ [Despertador Ponto] Contexto invÃ¡lido no init. ExtensÃ£o foi recarregada.');
-    console.warn('âš ï¸ [Despertador Ponto] Por favor, recarregue esta pÃ¡gina (F5) para usar a extensÃ£o.');
+    console.error('❌ [Despertador Ponto] Contexto inválido no init. Extensão foi recarregada.');
+    console.warn('⚠️ [Despertador Ponto] Por favor, recarregue esta página (F5) para usar a extensão.');
     return;
   }
   
@@ -820,7 +863,7 @@ function initDetector() {
   // Initialize picker instance
   picker = new ElementPicker();
   
-  console.log('âœ… [Despertador Ponto] Detector e Picker inicializados');
+  console.log('✅ [Despertador Ponto] Detector e Picker inicializados');
 }
 
 // Cleanup ao descarregar
@@ -837,45 +880,45 @@ window.addEventListener('unload', () => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // Check if extension context is still valid
   if (!chrome.runtime?.id) {
-    console.error('âŒ [Content] Contexto da extensÃ£o invalidado. Mensagem ignorada.');
+    console.error('❌ [Content] Contexto da extensão invalidado. Mensagem ignorada.');
     return false;
   }
 
-  console.log('ðŸ“¨ [Content] Mensagem recebida:', request);
+  console.log('📨 [Content] Mensagem recebida:', request);
   
   if (request.action === 'ping') {
-
+    console.log('🏓 [Content] Respondendo ping com status active');
     sendResponse({ status: 'active' });
     return true;
   }
 
   if (request.action === 'startPicker') {
-
+    console.log('🎯 [Content] Iniciando picker...');
     if (!picker) {
-  
+      console.log('📝 [Content] Criando nova instância de ElementPicker');
       picker = new ElementPicker();
     }
     
     try {
       picker.start();
-  
+      console.log('✅ [Content] Picker iniciado com sucesso!');
       sendResponse({ success: true });
     } catch (error) {
-      console.error('âŒ [Content] Erro ao iniciar picker:', error);
+      console.error('❌ [Content] Erro ao iniciar picker:', error);
       sendResponse({ success: false, error: error.message });
     }
     return true;
   }
 
   if (request.action === 'stopPicker') {
-
+    console.log('🛑 [Content] Parando picker...');
     if (picker) {
       picker.stop();
-  
+      console.log('✅ [Content] Picker parado');
     }
     sendResponse({ success: true });
     return true;
   }
   
-  console.warn('âš ï¸ [Content] AÃ§Ã£o desconhecida:', request.action);
+  console.warn('⚠️ [Content] Ação desconhecida:', request.action);
 });
