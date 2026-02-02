@@ -15,6 +15,7 @@ class ClickDetector {
     this.observer = null;
     this.buttonFound = false;
     this.contextInvalidated = false; // Flag para parar se contexto invalidar
+    this.mutationDebounceTimer = null;
   }
 
   async init() {
@@ -43,9 +44,11 @@ class ClickDetector {
         return;
       }
       
-      if (!this.buttonFound) {
+      // Debounce para evitar execuções excessivas
+      clearTimeout(this.mutationDebounceTimer);
+      this.mutationDebounceTimer = setTimeout(async () => {
         await this.findAndAttachListener();
-      }
+      }, 100); // 100ms de debounce
     });
 
     this.observer.observe(document.body, {
@@ -60,14 +63,19 @@ class ClickDetector {
   async findAndAttachListener() {
     const button = await this.findButton();
     
-    if (button && !button.dataset.despertadorAttached) {
-      console.log('✅ [Despertador Ponto] Botão de ponto encontrado!', button);
-      this.attachClickListener(button);
-      this.buttonFound = true;
-      button.dataset.despertadorAttached = 'true';
+    if (button) {
+      // Verifica se já tem listener anexado
+      if (!button.dataset.despertadorAttached) {
+        console.log('✅ [Despertador Ponto] Botão de ponto encontrado!', button);
+        this.attachClickListener(button);
+        this.buttonFound = true;
+        button.dataset.despertadorAttached = 'true';
+      }
       
-      // Adiciona indicador visual
-      this.addVisualIndicator(button);
+      // Sempre verifica e readiciona indicador se necessário
+      if (!button.querySelector('.despertador-indicator')) {
+        this.addVisualIndicator(button);
+      }
     }
   }
 
@@ -320,7 +328,13 @@ class ClickDetector {
    * Adiciona indicador visual no botão
    */
   addVisualIndicator(button) {
+    // Verifica se já existe indicador
+    if (button.querySelector('.despertador-indicator')) {
+      return;
+    }
+
     const indicator = document.createElement('div');
+    indicator.className = 'despertador-indicator'; // Classe para identificar
     indicator.innerHTML = '⏰';
     indicator.title = 'Monitorado pelo Despertador Ponto';
     indicator.style.cssText = `
@@ -337,11 +351,16 @@ class ClickDetector {
       font-size: 12px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
       z-index: 10;
+      pointer-events: none;
     `;
 
     // Torna o botão relativo para posicionar o indicador
-    button.style.position = 'relative';
+    if (window.getComputedStyle(button).position === 'static') {
+      button.style.position = 'relative';
+    }
     button.appendChild(indicator);
+    
+    console.log('🎨 [Despertador Ponto] Indicador visual adicionado');
   }
 
   /**
@@ -353,6 +372,10 @@ class ClickDetector {
       this.observer.disconnect();
       this.observer = null;
       console.log('✅ [Despertador Ponto] Observer desconectado');
+    }
+    if (this.mutationDebounceTimer) {
+      clearTimeout(this.mutationDebounceTimer);
+      this.mutationDebounceTimer = null;
     }
   }
 }

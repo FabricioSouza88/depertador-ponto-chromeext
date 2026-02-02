@@ -5,6 +5,57 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [2.3.3] - 2026-01-26
+
+### 🐛 Correção: Indicador Visual Persiste em Modais Dinâmicos
+
+- **Problema resolvido**: Indicador visual (⏰) desaparecia quando modal era fechado e reaberto
+- **Causa**: MutationObserver parava de observar após encontrar o botão pela primeira vez
+- **Solução**: Observer agora continua monitorando e readiciona indicador quando necessário
+
+### 🔧 Melhorias Técnicas
+
+**1. Monitoramento Contínuo**:
+- Observer agora sempre verifica se o botão foi recriado
+- Detecta automaticamente quando modal reabre
+- Readiciona indicador visual se ele foi removido
+
+**2. Otimizações de Performance**:
+- Debounce de 100ms no MutationObserver para evitar execuções excessivas
+- Verificação inteligente: só adiciona indicador se não existir
+- Classe CSS `.despertador-indicator` para identificação rápida
+- Limpeza de timers no cleanup()
+
+**3. Melhorias no Indicador**:
+- Adiciona `pointer-events: none` para não interferir com cliques
+- Verifica `position` do botão antes de modificar
+- Log de debug quando indicador é adicionado
+
+### 📋 Comportamento
+
+**Antes**:
+```
+1. Modal abre → Indicador aparece ✓
+2. Modal fecha
+3. Modal reabre → Indicador sumiu ✗
+4. Precisa recarregar página (F5) ✗
+```
+
+**Agora**:
+```
+1. Modal abre → Indicador aparece ✓
+2. Modal fecha
+3. Modal reabre → Indicador reaparece automaticamente ✓
+4. Funciona indefinidamente ✓
+```
+
+### 🎯 Benefícios
+
+- ✅ Indicador sempre visível quando modal está aberto
+- ✅ Sem necessidade de recarregar página
+- ✅ Performance otimizada com debounce
+- ✅ Funciona com SPAs e conteúdo dinâmico
+
 ## [2.3.2] - 2026-01-26
 
 ### 🔧 Correção Importante: Gerador de Selector Mais Robusto
