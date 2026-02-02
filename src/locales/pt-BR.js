@@ -33,7 +33,8 @@ export const ptBR = {
       remaining: 'Tempo Restante',
       noEntries: 'Nenhuma entrada registrada',
       timeToLeave: 'Hora de sair! 🎉',
-      calculate: 'Atualizar'
+      calculate: 'Atualizar',
+      openSystem: 'Abrir Sistema de Ponto'
     },
 
     // Seção de Configurações

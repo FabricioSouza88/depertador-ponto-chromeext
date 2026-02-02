@@ -200,6 +200,18 @@ header h1 {
   box-shadow: 0 4px 12px rgba(0, 184, 148, 0.4);
 }
 
+#open-system {
+  margin-top: 8px;
+  width: 100%;
+  background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+}
+
+#open-system:hover {
+  background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.5);
+}
+
 .btn-danger {
   background: #ff7675;
   color: white;

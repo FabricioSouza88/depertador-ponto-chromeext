@@ -32,7 +32,8 @@ export const es = {
       remaining: 'Tiempo Restante',
       noEntries: 'No hay entradas registradas',
       timeToLeave: '¡Hora de salir! 🎉',
-      calculate: 'Actualizar'
+      calculate: 'Actualizar',
+      openSystem: 'Abrir Sistema de Fichaje'
     },
 
     // Sección de Configuración

@@ -142,6 +142,7 @@ class UIManager {
       timeRemaining: document.getElementById('time-remaining'),
       progressFill: document.getElementById('progress-fill'),
       calculateExit: document.getElementById('calculate-exit'),
+      openSystem: document.getElementById('open-system'),
       workHours: document.getElementById('work-hours'),
       breakMinutes: document.getElementById('break-minutes'),
       usualEntryTime: document.getElementById('usual-entry-time'),
@@ -205,6 +206,7 @@ class UIManager {
   setupEventListeners() {
     this.elements.addManual.addEventListener('click', () => this.addManualEntry());
     this.elements.calculateExit.addEventListener('click', () => this.refreshUI());
+    this.elements.openSystem.addEventListener('click', () => this.openClockSystem());
     this.elements.saveSettings.addEventListener('click', () => this.saveSettings());
     this.elements.clearToday.addEventListener('click', () => this.clearToday());
     this.elements.selectButton.addEventListener('click', () => this.startButtonPicker());
@@ -352,6 +354,18 @@ class UIManager {
     chrome.runtime.sendMessage({ action: 'clearAlarm' });
   }
 
+  async openClockSystem() {
+    const config = await StorageManager.get('buttonConfig');
+    
+    if (config && config.pageUrl) {
+      // Abrir URL em nova aba
+      chrome.tabs.create({ url: config.pageUrl });
+      console.log('🌐 [Popup] Abrindo sistema de ponto:', config.pageUrl);
+    } else {
+      this.showNotification(i18n.t('popup.button.notConfigured'), 'error');
+    }
+  }
+
   showNotification(message, type = 'info') {
     const notification = document.createElement('div');
     notification.textContent = message;
@@ -403,11 +417,18 @@ class UIManager {
       this.elements.selectorDisplay.textContent = displayText;
       this.elements.selectorInfo.style.display = 'block';
       this.elements.clearSelector.style.display = 'block';
+      
+      // Mostrar botão de abrir sistema
+      this.elements.openSystem.style.display = 'inline-block';
+      this.elements.openSystem.dataset.url = config.pageUrl;
     } else {
       this.elements.selectorStatus.textContent = i18n.t('popup.button.notConfigured');
       this.elements.selectorStatus.className = 'status-value not-configured';
       this.elements.selectorInfo.style.display = 'none';
       this.elements.clearSelector.style.display = 'none';
+      
+      // Ocultar botão de abrir sistema
+      this.elements.openSystem.style.display = 'none';
     }
   }
 

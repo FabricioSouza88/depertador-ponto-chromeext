@@ -5,6 +5,30 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [2.2.1] - 2026-01-26
+
+### 🆕 Nova Funcionalidade: Botão de Acesso Rápido ao Sistema
+
+- **Botão "Abrir Sistema de Ponto"**: Novo botão no card de horário de saída
+- **Acesso direto**: Abre a URL do sistema de ponto em nova aba com um clique
+- **Condicional**: Botão só aparece quando o botão de ponto está configurado
+- **Visual moderno**: Gradiente roxo com ícone 🌐
+- **Multilíngue**: Traduzido em PT-BR, EN-US e ES
+
+### 🎨 Design
+
+- Botão com gradiente roxo (#6c5ce7 → #a29bfe)
+- Posicionado abaixo do botão "Atualizar"
+- Efeito hover com elevação e brilho
+- Largura total do card para melhor usabilidade
+
+### 🔧 Implementação Técnica
+
+- Salva URL do sistema na configuração `buttonConfig`
+- Mostra/oculta automaticamente baseado na configuração
+- Usa `chrome.tabs.create()` para abrir em nova aba
+- Listener de clique integrado no `setupEventListeners()`
+
 ## [2.2.0] - 2026-01-26
 
 ### 🆕 Nova Funcionalidade: Lembrete de Entrada Habitual

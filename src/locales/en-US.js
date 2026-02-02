@@ -32,7 +32,8 @@ export const enUS = {
       remaining: 'Time Remaining',
       noEntries: 'No entries recorded',
       timeToLeave: 'Time to leave! 🎉',
-      calculate: 'Refresh'
+      calculate: 'Refresh',
+      openSystem: 'Open Clock System'
     },
 
     // Settings Section
