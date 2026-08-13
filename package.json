@@ -1,10 +1,13 @@
 {
   "name": "despertador-ponto",
-  "version": "1.0.0",
+  "version": "2.3.5",
   "description": "Extensão Chrome para controlar e lembrar horários de batida de ponto online",
   "scripts": {
     "generate-icons": "node icons/generate-icons.js",
-    "build": "npm run generate-icons"
+    "build": "npm run generate-icons",
+    "release:patch": "node scripts/bump-version.js patch",
+    "release:minor": "node scripts/bump-version.js minor",
+    "release:major": "node scripts/bump-version.js major"
   },
   "keywords": [
     "chrome-extension",
@@ -15,6 +18,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "semver": "^7.6.0",
     "sharp": "^0.33.1"
   }
 }

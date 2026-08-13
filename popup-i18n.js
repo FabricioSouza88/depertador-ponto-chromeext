@@ -141,7 +141,6 @@ class UIManager {
       exitTime: document.getElementById('exit-time'),
       timeRemaining: document.getElementById('time-remaining'),
       progressFill: document.getElementById('progress-fill'),
-      calculateExit: document.getElementById('calculate-exit'),
       openSystem: document.getElementById('open-system'),
       workHours: document.getElementById('work-hours'),
       breakMinutes: document.getElementById('break-minutes'),
@@ -205,7 +204,6 @@ class UIManager {
 
   setupEventListeners() {
     this.elements.addManual.addEventListener('click', () => this.addManualEntry());
-    this.elements.calculateExit.addEventListener('click', () => this.refreshUI());
     this.elements.openSystem.addEventListener('click', () => this.openClockSystem());
     this.elements.saveSettings.addEventListener('click', () => this.saveSettings());
     this.elements.clearToday.addEventListener('click', () => this.clearToday());
